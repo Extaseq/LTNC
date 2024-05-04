@@ -1,0 +1,85 @@
+# depslib dependency file v1.0
+1714640782 source:e:\codeblocks\game-project\main.cpp
+	"GameManager.h"
+
+1714380501 source:e:\codeblocks\game-project\myvector.cpp
+	"MyVector.h"
+
+1714379966 e:\codeblocks\game-project\myvector.h
+	<iostream>
+
+1714728567 source:e:\codeblocks\game-project\gamemanager.cpp
+	"GameManager.h"
+
+1714728677 e:\codeblocks\game-project\gamemanager.h
+	"Graphics.h"
+	"SelectionMode.h"
+	"Beatmap/Formats/Decoder.h"
+	<dirent.h>
+
+1714629760 e:\codeblocks\game-project\graphics.h
+	<SDL.h>
+	<SDL_image.h>
+	<stdio.h>
+	<string>
+
+1714639047 source:e:\codeblocks\game-project\graphics.cpp
+	"Graphics.h"
+
+1714401740 e:\codeblocks\game-project\beatmap\beatmap.h
+	"Formats/Parsing.h"
+	"BeatmapInfo.h"
+	"BeatmapMetadata.h"
+	"BeatmapDifficulty.h"
+	<vector>
+
+1714400907 e:\codeblocks\game-project\beatmap\beatmapinfo.h
+
+1714400989 e:\codeblocks\game-project\beatmap\beatmapmetadata.h
+	<string>
+
+1714402812 e:\codeblocks\game-project\beatmap\beatmapdifficulty.h
+	<iostream>
+	<string>
+	<vector>
+
+1714724438 e:\codeblocks\game-project\beatmap\formats\parsing.h
+	<stdexcept>
+	<string>
+	<limits>
+	<sstream>
+	<cmath>
+
+1714727838 e:\codeblocks\game-project\beatmap\formats\decoder.h
+	<iostream>
+	<string>
+	<fstream>
+	<vector>
+	<dirent.h>
+	<unordered_map>
+	<algorithm>
+	"Parsing.h"
+	"../Beatmap.h"
+
+1714728190 source:e:\codeblocks\game-project\selectionmode.cpp
+	"SelectionMode.h"
+	"GameManager.h"
+
+1714728190 e:\codeblocks\game-project\selectionmode.h
+	<SDL.h>
+	<SDL_image.h>
+	<stdio.h>
+	<vector>
+	"Graphics.h"
+	"Sprite.h"
+
+1714638668 e:\codeblocks\game-project\sprite.h
+	<SDL.h>
+	<SDL_image.h>
+	<vector>
+	"MyVector.h"
+	"Graphics.h"
+
+1714727479 source:e:\codeblocks\game-project\sprite.cpp
+	"Sprite.h"
+

@@ -1,9 +1,14 @@
-#include <iostream>
+#include "GameManager.h"
 
-using namespace std;
-
-int main()
+int main(int argc, char ** argv)
 {
-    cout << "Hello world!" << endl;
+    GameManager* game = GameManager::Instance();
+
+    game->MainScreen();
+
+    GameManager::Release();
+
+    game = nullptr;
+
     return 0;
 }
