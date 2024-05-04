@@ -8,6 +8,7 @@
 
 #include "MyVector.h"
 #include "Graphics.h"
+#include "AssetManager.h"
 
 class Sprite
 {
@@ -20,8 +21,6 @@ private:
     int index = 0;
 
     std::vector<SDL_Texture*> TexList;
-
-    Graphics* mGraphics;
 
 public:
 

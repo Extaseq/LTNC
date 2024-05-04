@@ -2,15 +2,13 @@
 
 Sprite::Sprite(const std::string& spriteName, int frames_)
 {
-    mGraphics = Graphics::Instance();
-
     frames = frames_;
 
     std::string path = "Res\\" + spriteName;
 
     if (frames == 1)
     {
-        TexList.push_back(mGraphics->LoadTexture(path + "@2x.png"));
+        TexList.push_back(AssetManager::Instance()->GetTexture(path + "@2x.png"));
     }
 }
 
@@ -21,5 +19,5 @@ void Sprite::Update()
 
 void Sprite::Draw()
 {
-    mGraphics->DrawTexture(TexList[index], &dstRect, &srcRect);
+    Graphics::Instance()->DrawTexture(TexList[index], &dstRect, &srcRect);
 }

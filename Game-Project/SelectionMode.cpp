@@ -46,12 +46,16 @@ SelectionMode::~SelectionMode()
 
 void SelectionMode::Update(int index)
 {
+    if (prevIndex == index) return;
+
     background = mGraphics->LoadTexture(GameManager::BeatmapList[index].beatmapMetadata.BackgroundFile);
 
     for (Sprite* section : UI)
     {
         section->Update();
     }
+
+    prevIndex = index;
 }
 
 void SelectionMode::Render()

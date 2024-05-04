@@ -71,6 +71,8 @@ bool Graphics::Init()
 
     SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0x00);
 
+    SDL_ShowCursor(SDL_DISABLE);
+
     printf("SDL Initialize Successfully.\n");
 
     return true;
@@ -106,9 +108,9 @@ void Graphics::ClearBackbuffer()
     SDL_RenderClear(mRenderer);
 }
 
-void Graphics::DrawTexture(SDL_Texture* tex, SDL_FRect *dstRect, SDL_Rect *srcRect)
+void Graphics::DrawTexture(SDL_Texture* tex, SDL_FRect *dstRect, SDL_Rect *srcRect, double angle)
 {
-    SDL_RenderCopyExF(mRenderer, tex, srcRect, dstRect, 0, NULL, SDL_FLIP_NONE);
+    SDL_RenderCopyExF(mRenderer, tex, srcRect, dstRect, angle, NULL, SDL_FLIP_NONE);
 }
 
 void Graphics::Render()

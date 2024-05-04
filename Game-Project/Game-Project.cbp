@@ -33,12 +33,16 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="Animation.h" />
+		<Unit filename="AssetManager.cpp" />
+		<Unit filename="AssetManager.h" />
 		<Unit filename="Beatmap/Beatmap.h" />
 		<Unit filename="Beatmap/BeatmapDifficulty.h" />
 		<Unit filename="Beatmap/BeatmapInfo.h" />
 		<Unit filename="Beatmap/BeatmapMetadata.h" />
 		<Unit filename="Beatmap/Formats/Decoder.h" />
 		<Unit filename="Beatmap/Formats/Parsing.h" />
+		<Unit filename="Cursor.cpp" />
+		<Unit filename="Cursor.h" />
 		<Unit filename="GameManager.cpp" />
 		<Unit filename="GameManager.h" />
 		<Unit filename="Graphics.cpp" />

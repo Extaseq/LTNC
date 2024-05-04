@@ -92,14 +92,55 @@ void GameManager::MainScreen()
             if (mEvent.type == SDL_KEYDOWN)
             {
                 mQuit = false;
-                SelectionMode();
+                // SelectionMode();
             }
         }
         mGraphics->ClearBackbuffer();
 
         mGraphics->DrawTexture(mainScreen, NULL, NULL);
 
+        Cursor::Instance()->Render();
+
         mGraphics->Render();
+    }
+}
+
+void GameManager::handleKeyboard()
+{
+    while (SDL_PollEvent(&mEvent))
+    {
+        if (mEvent.type == SDL_QUIT)
+        {
+            mQuit = true;
+        }
+        else if (mEvent.type == SDL_KEYDOWN)
+        {
+            if (mEvent.key.keysym.sym == SDLK_ESCAPE)
+            {
+                mQuit = true;
+            }
+            else if (mEvent.key.keysym.sym == SDLK_a && !aKeyDown)
+            {
+                --index;
+                aKeyDown = true;
+            }
+            else if (mEvent.key.keysym.sym == SDLK_d && !dKeyDown)
+            {
+                ++index;
+                dKeyDown = true;
+            }
+        }
+        else if (mEvent.type == SDL_KEYUP)
+        {
+            if (mEvent.key.keysym.sym == SDLK_a)
+            {
+                aKeyDown = false;
+            }
+            if (mEvent.key.keysym.sym == SDLK_d)
+            {
+                dKeyDown = false;
+            }
+        }
     }
 }
 
@@ -112,48 +153,11 @@ void GameManager::SelectionMode()
 
     mainMenu = SelectionMode::Instance();
 
-    bool aKeyDown = false;
-    bool dKeyDown = false;
-
     while (!mQuit)
     {
         frameStart = SDL_GetTicks();
 
-        while (SDL_PollEvent(&mEvent))
-        {
-            if (mEvent.type == SDL_QUIT)
-            {
-                mQuit = true;
-            }
-            else if (mEvent.type == SDL_KEYDOWN)
-            {
-                if (mEvent.key.keysym.sym == SDLK_ESCAPE)
-                {
-                    mQuit = true;
-                }
-                else if (mEvent.key.keysym.sym == SDLK_a && !aKeyDown)
-                {
-                    --index;
-                    aKeyDown = true; // Set the flag to true when 'A' key is pressed down
-                }
-                else if (mEvent.key.keysym.sym == SDLK_d && !dKeyDown)
-                {
-                    ++index;
-                    dKeyDown = true;
-                }
-            }
-            else if (mEvent.type == SDL_KEYUP)
-            {
-                if (mEvent.key.keysym.sym == SDLK_a)
-                {
-                    aKeyDown = false; // Reset the flag when 'A' key is released
-                }
-                if (mEvent.key.keysym.sym == SDLK_d)
-                {
-                    dKeyDown = false; // Reset the flag when 'A' key is released
-                }
-            }
-        }
+        handleKeyboard();
 
         if (index < 0) index += BeatmapListSize;
         if (index >= BeatmapListSize) index %= BeatmapListSize;
@@ -163,6 +167,8 @@ void GameManager::SelectionMode()
         mainMenu->Update(index);
 
         mainMenu->Render();
+
+        Cursor::Instance()->Render();
 
         mGraphics->Render();
 

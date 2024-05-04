@@ -22,6 +22,8 @@ private:
 
     SDL_Texture* background;
 
+    int prevIndex = -1;
+
 public:
 
     static SelectionMode* Instance();
