@@ -22,6 +22,8 @@ public:
     {
         std::string directory = "Songs/" + beatmapName;
 
+        beatmap.beatmapMetadata.AudioFileDir = directory + "/";
+
         std::string fileName;
 
         DIR *dir;
@@ -45,6 +47,12 @@ public:
                 }
             }
         }
+
+        std::string audiofile = beatmap.beatmapMetadata.AudioFilename;
+        if (audiofile[0] == ' ') audiofile = audiofile.substr(1);
+
+
+        beatmap.beatmapMetadata.AudioFileDir += audiofile;
     }
 
     static void readDifficultFile(const std::string &fileName, Beatmap &beatmap)
@@ -108,9 +116,9 @@ public:
         {
             pair = keyValuePair(sectionInfo[line]);
 
-            if (pair.Key == "AudioFileName")
+            if (pair.Key == "AudioFilename")
             {
-                beatmap.beatmapMetadata.AudioFile = pair.second;
+                beatmap.beatmapMetadata.AudioFilename = pair.second;
             }
 
             if (pair.Key == "AudioLeadIn")

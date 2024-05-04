@@ -11,6 +11,7 @@
 
 #include "Graphics.h"
 #include "UserInterface.h"
+#include "AudioManager.h"
 #include "Beatmap/Beatmap.h"
 
 class SelectionMode
@@ -22,7 +23,13 @@ private:
     /*-----------------------Name - Texture-----*/
     std::vector<std::pair<std::string, UI*>> sections;
 
+    std::vector<UI*> difficultyList;
+
+    std::vector<SDL_Texture*> bmInfo;
+
     Graphics* mGraphics;
+
+    AudioManager* mAudioMgr;
 
     SDL_Texture* background;
 

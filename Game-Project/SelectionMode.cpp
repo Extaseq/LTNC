@@ -23,6 +23,8 @@ SelectionMode::SelectionMode()
 {
     mGraphics = Graphics::Instance();
 
+    mAudioMgr = AudioManager::Instance();
+
     sections.push_back(UI::make_pair("songselect-top", 0, -1, 3652, 1336, false));
 
     sections.push_back(UI::make_pair("songselect-bottom", 0, 1761, 3840, 399, false));
@@ -60,9 +62,20 @@ void SelectionMode::Update(int beatmapIndex)
 
     if (prevIndex == beatmapIndex) return;
 
+    bmInfo.clear();
+
     background = mGraphics->LoadTexture(GameManager::BeatmapList[beatmapIndex].beatmapMetadata.BackgroundFile);
 
     currentBeatmap = GameManager::BeatmapList[beatmapIndex];
+
+    bmInfo.push_back(mGraphics->LoadText(
+        "(" + currentBeatmap.beatmapMetadata.Artist + ") - " + currentBeatmap.beatmapMetadata.Title, 50)
+    );
+
+    if (Mix_PlayingMusic() != 1)
+    {
+        mAudioMgr->PlayMusic(currentBeatmap.beatmapMetadata.AudioFileDir.c_str());
+    }
 
     prevIndex = beatmapIndex;
 }
@@ -75,4 +88,6 @@ void SelectionMode::Render()
     {
         section.second->Render();
     }
+
+    mGraphics->DrawText(bmInfo[0], 200, 10);
 }

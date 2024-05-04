@@ -19,7 +19,9 @@ struct BeatmapMetadata
 
     std::string SampleSet;
 
-    std::string AudioFile;
+    std::string AudioFileDir;
+
+    std::string AudioFilename;
 
     std::string BackgroundFile;
 };

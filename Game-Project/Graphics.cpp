@@ -112,7 +112,7 @@ SDL_Texture* Graphics::LoadTexture(const std::string& path)
 
 void Graphics::LoadFont(int size)
 {
-    mFont = TTF_OpenFont("Res\\Jaro-Regular.ttf", size);
+    mFont = TTF_OpenFont("Res\\Aller_Std.ttf", size);
     if (mFont == nullptr)
     {
         printf("Unable to Load Font: %s\n", TTF_GetError());

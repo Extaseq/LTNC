@@ -37,7 +37,7 @@ GameManager::GameManager()
 
     mainScreen = mGraphics->LoadTexture("Res\\menu-background.jpg");
 
-    clickToPlay = mGraphics->LoadText("- PRESS ANY BUTTON -", 200);
+    clickToPlay = mGraphics->LoadText("- PRESS ANY BUTTON -", 180);
 
     LoadBeatmap();
 
@@ -58,6 +58,8 @@ GameManager::~GameManager()
 void GameManager::LoadBeatmap()
 {
     freopen("logError.txt", "w", stdout);
+
+    printf("Start here.\n");
 
     DIR* dir;
 
@@ -132,7 +134,7 @@ void GameManager::MainScreen()
 
         mGraphics->DrawTexture(mainScreen, NULL, NULL);
 
-        mGraphics->DrawText(clickToPlay, 920, 1400);
+        mGraphics->DrawText(clickToPlay, 900, 1420);
 
         Cursor::Instance()->Render();
 
@@ -158,11 +160,13 @@ void GameManager::handleKeyboard()
             {
                 --index;
                 aKeyDown = true;
+                Mix_HaltMusic();
             }
             else if (mEvent.key.keysym.sym == SDLK_d && !dKeyDown)
             {
                 ++index;
                 dKeyDown = true;
+                Mix_HaltMusic();
             }
         }
         else if (mEvent.type == SDL_KEYUP)
