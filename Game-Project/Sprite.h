@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "MyVector.h"
-#include "Graphics.h"
+#include "Cursor.h"
 #include "AssetManager.h"
 
 class Sprite
@@ -20,7 +20,9 @@ private:
 
     int index = 0;
 
-    std::vector<SDL_Texture*> TexList;
+    int scale = 1;
+
+    std::string fileName;
 
 public:
 

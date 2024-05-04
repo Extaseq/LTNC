@@ -2,6 +2,8 @@
 
 Cursor* Cursor::sInstance = nullptr;
 
+int Cursor::x, Cursor::y;
+
 Cursor* Cursor::Instance()
 {
     if (sInstance == nullptr)

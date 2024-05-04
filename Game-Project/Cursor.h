@@ -15,11 +15,11 @@ private:
 
     SDL_FRect RenderQuad;
 
-    int x, y;
-
     double angle = 0;
 
 public:
+
+    static int x, y;
 
     static Cursor* Instance();
 

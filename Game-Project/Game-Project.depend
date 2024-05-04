@@ -98,7 +98,7 @@
 1714812670 e:\LTNC\game-project\cursor.h
 	"AssetManager.h"
 
-1714809806 source:e:\ltnc\game-project\assetmanager.cpp
+1714821098 source:e:\ltnc\game-project\assetmanager.cpp
 	"AssetManager.h"
 
 1714809439 e:\ltnc\game-project\assetmanager.h
@@ -111,13 +111,13 @@
 	<stdio.h>
 	<string>
 
-1714812781 source:e:\ltnc\game-project\cursor.cpp
+1714819533 source:e:\ltnc\game-project\cursor.cpp
 	"Cursor.h"
 
-1714812670 e:\ltnc\game-project\cursor.h
+1714819518 e:\ltnc\game-project\cursor.h
 	"AssetManager.h"
 
-1714813113 source:e:\ltnc\game-project\gamemanager.cpp
+1714813650 source:e:\ltnc\game-project\gamemanager.cpp
 	"GameManager.h"
 
 1714812421 e:\ltnc\game-project\gamemanager.h
@@ -127,20 +127,20 @@
 	"Beatmap/Formats/Decoder.h"
 	<dirent.h>
 
-1714813086 e:\ltnc\game-project\selectionmode.h
+1714823963 e:\ltnc\game-project\selectionmode.h
 	<SDL.h>
 	<SDL_image.h>
 	<stdio.h>
 	<vector>
 	"Graphics.h"
-	"Sprite.h"
+	"UserInterface.h"
 
-1714810700 e:\ltnc\game-project\sprite.h
+1714819935 e:\ltnc\game-project\sprite.h
 	<SDL.h>
 	<SDL_image.h>
 	<vector>
 	"MyVector.h"
-	"Graphics.h"
+	"Cursor.h"
 	"AssetManager.h"
 
 1714379966 e:\ltnc\game-project\myvector.h
@@ -181,7 +181,7 @@
 	<string>
 	<vector>
 
-1714812558 source:e:\ltnc\game-project\graphics.cpp
+1714824168 source:e:\ltnc\game-project\graphics.cpp
 	"Graphics.h"
 
 1714640782 source:e:\ltnc\game-project\main.cpp
@@ -190,10 +190,16 @@
 1714380501 source:e:\ltnc\game-project\myvector.cpp
 	"MyVector.h"
 
-1714813106 source:e:\ltnc\game-project\selectionmode.cpp
+1714824094 source:e:\ltnc\game-project\selectionmode.cpp
 	"SelectionMode.h"
 	"GameManager.h"
 
-1714810700 source:e:\ltnc\game-project\sprite.cpp
+1714821673 source:e:\ltnc\game-project\sprite.cpp
 	"Sprite.h"
+
+1714824224 source:e:\ltnc\game-project\userinterface.cpp
+	"UserInterface.h"
+
+1714823639 e:\ltnc\game-project\userinterface.h
+	"AssetManager.h"
 

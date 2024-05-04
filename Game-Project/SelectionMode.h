@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "Graphics.h"
-#include "Sprite.h"
+#include "UserInterface.h"
 
 class SelectionMode
 {
@@ -16,7 +16,8 @@ private:
 
     static SelectionMode* sInstance;
 
-    std::vector<Sprite*> UI;
+    /*-----------------------Name - Texture-----*/
+    std::vector<std::pair<std::string, UI*>> sections;
 
     Graphics* mGraphics;
 

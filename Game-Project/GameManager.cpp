@@ -92,7 +92,7 @@ void GameManager::MainScreen()
             if (mEvent.type == SDL_KEYDOWN)
             {
                 mQuit = false;
-                // SelectionMode();
+                SelectionMode();
             }
         }
         mGraphics->ClearBackbuffer();
