@@ -1,6 +1,8 @@
 #include "SelectionMode.h"
 #include "GameManager.h"
 
+#include <iostream>
+
 SelectionMode* SelectionMode::sInstance = nullptr;
 
 SelectionMode* SelectionMode::Instance()
@@ -21,7 +23,7 @@ SelectionMode::SelectionMode()
 {
     mGraphics = Graphics::Instance();
 
-    sections.push_back(UI::make_pair("songselect-top", 0, 0, 3652, 1335, false));
+    sections.push_back(UI::make_pair("songselect-top", 0, -1, 3652, 1336, false));
 
     sections.push_back(UI::make_pair("songselect-bottom", 0, 1761, 3840, 399, false));
 
@@ -36,18 +38,33 @@ SelectionMode::~SelectionMode()
 
 }
 
-void SelectionMode::Update(int index)
+std::string SelectionMode::getButtonClicked(int x, int y)
+{
+    for (auto section : sections)
+    {
+        if (section.second->OnMouseHover(x, y))
+        {
+            return section.second->getName();
+        }
+    }
+
+    return "NULL";
+}
+
+void SelectionMode::Update(int beatmapIndex)
 {
     for (std::pair<std::string, UI*> section : sections)
     {
         section.second->Update();
     }
 
-    if (prevIndex == index) return;
+    if (prevIndex == beatmapIndex) return;
 
-    background = mGraphics->LoadTexture(GameManager::BeatmapList[index].beatmapMetadata.BackgroundFile);
+    background = mGraphics->LoadTexture(GameManager::BeatmapList[beatmapIndex].beatmapMetadata.BackgroundFile);
 
-    prevIndex = index;
+    currentBeatmap = GameManager::BeatmapList[beatmapIndex];
+
+    prevIndex = beatmapIndex;
 }
 
 void SelectionMode::Render()

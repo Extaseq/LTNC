@@ -13,11 +13,11 @@ private:
 
     std::string fileName;
 
+    std::string name;
+
     AssetManager* AssetMgr;
 
     int scale = 1;
-
-    int x, y;
 
     bool glow = false;
 
@@ -25,11 +25,13 @@ private:
 
 public:
 
-    UI(const std::string name, int x, int y, int w, int h, bool gl)
+    UI(const std::string name_, int x, int y, int w, int h, bool gl)
     {
         AssetMgr = AssetManager::Instance();
 
-        fileName = "Res\\" + name + "@2x.png";
+        fileName = "Res\\" + name_ + "@2x.png";
+
+        name = name_;
 
         pos = new SDL_FRect();
 
@@ -54,7 +56,7 @@ public:
 
     void UnGlow();
 
-    bool OnMouseHover();
+    bool OnMouseHover(int x, int y);
 
     void Update();
 
@@ -63,6 +65,11 @@ public:
     static std::pair<std::string, UI*> make_pair(std::string name, int x, int y, int w, int h, bool gl)
     {
         return std::make_pair(name, new UI(name, x, y, w, h, gl));
+    }
+
+    std::string getName()
+    {
+        return name;
     }
 };
 

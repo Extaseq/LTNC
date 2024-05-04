@@ -22,17 +22,19 @@ private:
 
     SDL_Texture* mainScreen;
 
+    SDL_Texture* clickToPlay;
+
     Graphics* mGraphics;
 
     SelectionMode* mainMenu;
-
-    static SDL_Event mEvent;
 
     int BeatmapListSize;
 
 public:
 
     static GameManager* Instance();
+
+    static SDL_Event mEvent;
 
     static void Release();
 
@@ -43,6 +45,8 @@ public:
     void SelectionMode();
 
     void MainScreen();
+
+    void FadeIn();
 
     static std::vector<Beatmap> BeatmapList;
 

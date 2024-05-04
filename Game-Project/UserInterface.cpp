@@ -1,11 +1,11 @@
 #include "UserInterface.h"
+#include "GameManager.h"
 
-bool UI::OnMouseHover()
+bool UI::OnMouseHover(int x, int y)
 {
-    SDL_GetMouseState(&x, &y);
+    if (!canGlow) return false;
 
-    return ((x >= pos->x) && (x <= (pos->w + pos->x)) && (y >= pos->y) && (y <= (pos->y + pos->h)));
-
+    return ((x >= pos->x) && (x <= (pos->x + pos->w)) && (y >= pos->y) && (y <= (pos->y + pos->h)));
 }
 
 void UI::Glow()
@@ -34,7 +34,11 @@ void UI::Update()
 {
     if (!canGlow) return;
 
-    if (OnMouseHover())
+    int x, y;
+
+    SDL_GetMouseState(&x, &y);
+
+    if (OnMouseHover(x, y))
     {
         Glow();
     }

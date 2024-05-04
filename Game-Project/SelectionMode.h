@@ -6,9 +6,12 @@
 
 #include <stdio.h>
 #include <vector>
+#include <unordered_map>
+#include <array>
 
 #include "Graphics.h"
 #include "UserInterface.h"
+#include "Beatmap/Beatmap.h"
 
 class SelectionMode
 {
@@ -25,6 +28,8 @@ private:
 
     int prevIndex = -1;
 
+    Beatmap currentBeatmap;
+
 public:
 
     static SelectionMode* Instance();
@@ -32,6 +37,8 @@ public:
     static void Release();
 
     void Update(int index);
+
+    std::string getButtonClicked(int x, int y);
 
     void Render();
 

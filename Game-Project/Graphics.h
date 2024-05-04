@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include <stdio.h>
 #include <string>
@@ -23,7 +24,7 @@ private:
 
     SDL_Window* mWindow;
 
-    SDL_Surface* mBackBuffer;
+    TTF_Font* mFont;
 
 public:
 
@@ -37,9 +38,15 @@ public:
 
     SDL_Texture* LoadTexture(const std::string& path);
 
+    SDL_Texture* LoadText(const std::string& text, int size, bool dimmed = false);
+
+    void LoadFont(int size);
+
     void ClearBackbuffer();
 
     void DrawTexture(SDL_Texture* tex, SDL_FRect *dstRec, SDL_Rect *srcRect = NULL, double angle = 0);
+
+    void DrawText(SDL_Texture* text, int x, int y);
 
     void Render();
 

@@ -37,6 +37,8 @@ GameManager::GameManager()
 
     mainScreen = mGraphics->LoadTexture("Res\\menu-background.jpg");
 
+    clickToPlay = mGraphics->LoadText("- PRESS ANY BUTTON -", 200);
+
     LoadBeatmap();
 
     BeatmapListSize = BeatmapList.size();
@@ -44,6 +46,8 @@ GameManager::GameManager()
 
 GameManager::~GameManager()
 {
+    AssetManager::Release();
+
     Graphics::Release();
     mGraphics = nullptr;
 
@@ -79,8 +83,36 @@ void GameManager::LoadBeatmap()
     printf("Beatmap Loaded Successfully.\n");
 }
 
+void GameManager::FadeIn()
+{
+    SDL_SetTextureBlendMode(mainScreen, SDL_BLENDMODE_BLEND);
+
+    Uint32 elapsedTime = 0;
+
+    Uint32 startTime = SDL_GetTicks();
+
+    while (elapsedTime <= 1000)
+    {
+        int alpha = 255 * elapsedTime / 1000;
+
+        SDL_SetTextureAlphaMod(mainScreen, alpha);
+
+        mGraphics->ClearBackbuffer();
+
+        mGraphics->DrawTexture(mainScreen, NULL, NULL);
+
+        Cursor::Instance()->Render();
+
+        mGraphics->Render();
+
+        elapsedTime = SDL_GetTicks() - startTime;
+    }
+}
+
 void GameManager::MainScreen()
 {
+    FadeIn();
+
     while (true)
     {
         while (SDL_PollEvent(&mEvent))
@@ -93,11 +125,14 @@ void GameManager::MainScreen()
             {
                 mQuit = false;
                 SelectionMode();
+                FadeIn();
             }
         }
         mGraphics->ClearBackbuffer();
 
         mGraphics->DrawTexture(mainScreen, NULL, NULL);
+
+        mGraphics->DrawText(clickToPlay, 920, 1400);
 
         Cursor::Instance()->Render();
 
@@ -139,6 +174,14 @@ void GameManager::handleKeyboard()
             if (mEvent.key.keysym.sym == SDLK_d)
             {
                 dKeyDown = false;
+            }
+        }
+        else if (mEvent.type == SDL_MOUSEBUTTONDOWN)
+        {
+            if (mainMenu->getButtonClicked(mEvent.button.x, mEvent.button.y) == "menu-back")
+            {
+                SDL_Delay(100);
+                mQuit = true;
             }
         }
     }
