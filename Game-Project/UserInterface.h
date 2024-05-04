@@ -35,7 +35,12 @@ public:
 
         pos = new SDL_FRect();
 
-        *pos = {x, y, w, h};
+        *pos = {
+            static_cast<float>(x),
+            static_cast<float>(y),
+            static_cast<float>(w),
+            static_cast<float>(h)
+        };
 
         canGlow = gl;
     }

@@ -8,6 +8,8 @@ std::vector<Beatmap> GameManager::BeatmapList;
 
 int index = 0;
 
+int diffIndex = 0;
+
 GameManager* GameManager::Instance()
 {
     if (sInstance == nullptr)
@@ -26,9 +28,13 @@ void GameManager::Release()
 
 GameManager::GameManager()
 {
+    std::srand(std::time(nullptr));
+
     mQuit = false;
 
     mGraphics = Graphics::Instance();
+
+    mAudioMgr = AudioManager::Instance();
 
     if (!Graphics::Initialized())
     {
@@ -93,9 +99,9 @@ void GameManager::FadeIn()
 
     Uint32 startTime = SDL_GetTicks();
 
-    while (elapsedTime <= 1000)
+    while (elapsedTime <= 500)
     {
-        int alpha = 255 * elapsedTime / 1000;
+        int alpha = 255 * elapsedTime / 500;
 
         SDL_SetTextureAlphaMod(mainScreen, alpha);
 
@@ -121,9 +127,9 @@ void GameManager::MainScreen()
         {
             if (mEvent.type == SDL_QUIT)
             {
-                mQuit = true;
+                return;
             }
-            if (mEvent.type == SDL_KEYDOWN)
+            if (mEvent.type == SDL_KEYDOWN || mEvent.type == SDL_MOUSEBUTTONDOWN)
             {
                 mQuit = false;
                 SelectionMode();
@@ -158,15 +164,37 @@ void GameManager::handleKeyboard()
             }
             else if (mEvent.key.keysym.sym == SDLK_a && !aKeyDown)
             {
+                mAudioMgr->PlaySFX("Res\\menu-play-click.ogg", -1);
                 --index;
+                diffIndex = 0;
                 aKeyDown = true;
                 Mix_HaltMusic();
             }
             else if (mEvent.key.keysym.sym == SDLK_d && !dKeyDown)
             {
+                mAudioMgr->PlaySFX("Res\\menu-play-click.ogg", -1);
                 ++index;
+                diffIndex = 0;
                 dKeyDown = true;
                 Mix_HaltMusic();
+            }
+            else if (mEvent.key.keysym.sym == SDLK_w && !wKeyDown)
+            {
+                mAudioMgr->PlaySFX("Res\\menu-play-click.ogg", -1);
+                wKeyDown = true;
+
+                if (diffIndex == 0) return;
+
+                --diffIndex;
+            }
+            else if (mEvent.key.keysym.sym == SDLK_s && !sKeyDown)
+            {
+                mAudioMgr->PlaySFX("Res\\menu-play-click.ogg", -1);
+                sKeyDown = true;
+
+                if (diffIndex == BeatmapList[index].beatmapDifficulty.size() - 1) return;
+
+                ++diffIndex;
             }
         }
         else if (mEvent.type == SDL_KEYUP)
@@ -179,13 +207,30 @@ void GameManager::handleKeyboard()
             {
                 dKeyDown = false;
             }
+            if (mEvent.key.keysym.sym == SDLK_w)
+            {
+                wKeyDown = false;
+            }
+            if (mEvent.key.keysym.sym == SDLK_s)
+            {
+                sKeyDown = false;
+            }
         }
         else if (mEvent.type == SDL_MOUSEBUTTONDOWN)
         {
             if (mainMenu->getButtonClicked(mEvent.button.x, mEvent.button.y) == "menu-back")
             {
+                mAudioMgr->PlaySFX("Res\\menu-back-click.ogg", -1);
+
                 SDL_Delay(100);
                 mQuit = true;
+            }
+            if (mainMenu->getButtonClicked(mEvent.button.x, mEvent.button.y) == "selection-random-over")
+            {
+                mAudioMgr->PlaySFX("Res\\menuHit.ogg", -1);
+                index = std::rand() % BeatmapListSize;
+                diffIndex = 0;
+                Mix_HaltMusic();
             }
         }
     }
@@ -211,7 +256,7 @@ void GameManager::SelectionMode()
 
         mGraphics->ClearBackbuffer();
 
-        mainMenu->Update(index);
+        mainMenu->Update(index, diffIndex);
 
         mainMenu->Render();
 

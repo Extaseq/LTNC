@@ -53,6 +53,13 @@ public:
 
 
         beatmap.beatmapMetadata.AudioFileDir += audiofile;
+
+        std::sort(beatmap.beatmapDifficulty.begin(), beatmap.beatmapDifficulty.end(), compare);
+    }
+
+    static bool compare(const BeatmapDifficulty& a, const BeatmapDifficulty& b)
+    {
+        return a.hitObjects.size() < b.hitObjects.size();
     }
 
     static void readDifficultFile(const std::string &fileName, Beatmap &beatmap)

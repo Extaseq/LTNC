@@ -14,7 +14,7 @@ void UI::Glow()
 
     SDL_SetTextureBlendMode(AssetMgr->GetTexture(fileName), SDL_BLENDMODE_ADD);
 
-    SDL_SetTextureAlphaMod(AssetMgr->GetTexture(fileName), 1000);
+    SDL_SetTextureAlphaMod(AssetMgr->GetTexture(fileName), static_cast<Uint8>(1000));
 
     glow = true;
 }

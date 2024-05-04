@@ -26,6 +26,8 @@ private:
 
     Graphics* mGraphics;
 
+    AudioManager* mAudioMgr;
+
     SelectionMode* mainMenu;
 
     int BeatmapListSize;
@@ -51,7 +53,12 @@ public:
     static std::vector<Beatmap> BeatmapList;
 
     bool aKeyDown = false;
+
     bool dKeyDown = false;
+
+    bool wKeyDown = false;
+
+    bool sKeyDown = false;
 
 private:
 

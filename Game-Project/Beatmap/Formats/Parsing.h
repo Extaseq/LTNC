@@ -5,6 +5,7 @@
 #include <limits>
 #include <sstream>
 #include <cmath>
+#include <iomanip>
 
 class Parsing
 {
@@ -46,5 +47,14 @@ public:
         if (output > parseLimit) throw std::overflow_error("Value is too high");
 
         return output;
+    }
+
+    static std::string secondsToTimeString(float seconds) {
+        int minutes = static_cast<int>(seconds) / 60;
+        int remainingSeconds = static_cast<int>(seconds) % 60;
+
+        std::ostringstream oss;
+        oss << std::setfill('0') << std::setw(2) << minutes << ":" << std::setw(2) << remainingSeconds;
+        return oss.str();
     }
 };

@@ -119,24 +119,28 @@
 1714819518 e:\ltnc\game-project\cursor.h
 	"AssetManager.h"
 
-1714841488 source:e:\ltnc\game-project\gamemanager.cpp
+1714865252 source:e:\ltnc\game-project\gamemanager.cpp
 	"GameManager.h"
 
-1714838195 e:\ltnc\game-project\gamemanager.h
+1714864218 e:\ltnc\game-project\gamemanager.h
 	"Graphics.h"
 	"Cursor.h"
 	"SelectionMode.h"
 	"Beatmap/Formats/Decoder.h"
 	<dirent.h>
 
-1714840802 e:\ltnc\game-project\selectionmode.h
+1714865066 e:\ltnc\game-project\selectionmode.h
 	<SDL.h>
 	<SDL_image.h>
 	<stdio.h>
 	<vector>
 	<unordered_map>
 	<array>
+	<string>
+	<cstdlib>
+	<ctime>
 	"Graphics.h"
+	"AssetManager.h"
 	"UserInterface.h"
 	"AudioManager.h"
 	"Beatmap/Beatmap.h"
@@ -152,7 +156,7 @@
 1714379966 e:\ltnc\game-project\myvector.h
 	<iostream>
 
-1714841160 e:\ltnc\game-project\beatmap\formats\decoder.h
+1714859411 e:\ltnc\game-project\beatmap\formats\decoder.h
 	<iostream>
 	<string>
 	<fstream>
@@ -163,12 +167,13 @@
 	"Parsing.h"
 	"../Beatmap.h"
 
-1714724438 e:\ltnc\game-project\beatmap\formats\parsing.h
+1714858100 e:\ltnc\game-project\beatmap\formats\parsing.h
 	<stdexcept>
 	<string>
 	<limits>
 	<sstream>
 	<cmath>
+	<iomanip>
 
 1714401740 e:\ltnc\game-project\beatmap\beatmap.h
 	"Formats/Parsing.h"
@@ -187,7 +192,7 @@
 	<string>
 	<vector>
 
-1714837693 source:e:\ltnc\game-project\graphics.cpp
+1714861108 source:e:\ltnc\game-project\graphics.cpp
 	"Graphics.h"
 
 1714640782 source:e:\ltnc\game-project\main.cpp
@@ -196,7 +201,7 @@
 1714380501 source:e:\ltnc\game-project\myvector.cpp
 	"MyVector.h"
 
-1714841467 source:e:\ltnc\game-project\selectionmode.cpp
+1714865380 source:e:\ltnc\game-project\selectionmode.cpp
 	"SelectionMode.h"
 	"GameManager.h"
 	<iostream>
@@ -204,17 +209,17 @@
 1714821673 source:e:\ltnc\game-project\sprite.cpp
 	"Sprite.h"
 
-1714835983 source:e:\ltnc\game-project\userinterface.cpp
+1714864617 source:e:\ltnc\game-project\userinterface.cpp
 	"UserInterface.h"
 	"GameManager.h"
 
-1714835708 e:\ltnc\game-project\userinterface.h
+1714857179 e:\ltnc\game-project\userinterface.h
 	"AssetManager.h"
 
 1714828971 e:\ltnc\game-project\button.h
 	<string>
 
-1714840675 source:e:\ltnc\game-project\audiomanager.cpp
+1714845179 source:e:\ltnc\game-project\audiomanager.cpp
 	"AudioManager.h"
 
 1714840713 e:\ltnc\game-project\audiomanager.h
