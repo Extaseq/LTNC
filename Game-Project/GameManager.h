@@ -4,6 +4,7 @@
 #include "Graphics.h"
 #include "Cursor.h"
 #include "SelectionMode.h"
+#include "PlayField.h"
 #include "Beatmap/Formats/Decoder.h"
 
 #include <dirent.h>
@@ -23,6 +24,8 @@ private:
     SDL_Texture* mainScreen;
 
     SDL_Texture* clickToPlay;
+
+    PlayField* newGame;
 
     Graphics* mGraphics;
 

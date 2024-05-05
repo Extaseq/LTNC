@@ -162,6 +162,14 @@ void GameManager::handleKeyboard()
             {
                 mQuit = true;
             }
+            else if (mEvent.key.keysym.sym == SDLK_RETURN)
+            {
+                Mix_HaltMusic();
+                newGame = new PlayField(BeatmapList[index], diffIndex);
+                delete newGame;
+                newGame = nullptr;
+                mQuit = false;
+            }
             else if (mEvent.key.keysym.sym == SDLK_a && !aKeyDown)
             {
                 mAudioMgr->PlaySFX("Res\\menu-play-click.ogg", -1);
