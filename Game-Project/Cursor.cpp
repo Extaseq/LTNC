@@ -21,6 +21,8 @@ void Cursor::Release()
 
 void Cursor::Update()
 {
+    SDL_PumpEvents();
+
     SDL_GetMouseState(&x, &y);
 
     angle += PI / 6;

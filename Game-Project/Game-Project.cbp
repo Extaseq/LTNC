@@ -35,6 +35,8 @@
 		<Unit filename="Animation.h" />
 		<Unit filename="AssetManager.cpp" />
 		<Unit filename="AssetManager.h" />
+		<Unit filename="AudioManager.cpp" />
+		<Unit filename="AudioManager.h" />
 		<Unit filename="Beatmap/Beatmap.h" />
 		<Unit filename="Beatmap/BeatmapDifficulty.h" />
 		<Unit filename="Beatmap/BeatmapInfo.h" />
@@ -49,10 +51,14 @@
 		<Unit filename="Graphics.h" />
 		<Unit filename="MyVector.cpp" />
 		<Unit filename="MyVector.h" />
+		<Unit filename="PlayField.cpp" />
+		<Unit filename="PlayField.h" />
 		<Unit filename="SelectionMode.cpp" />
 		<Unit filename="SelectionMode.h" />
 		<Unit filename="Sprite.cpp" />
 		<Unit filename="Sprite.h" />
+		<Unit filename="UserInterface.cpp" />
+		<Unit filename="UserInterface.h" />
 		<Unit filename="logError.txt" />
 		<Unit filename="main.cpp" />
 		<Extensions>

@@ -6,7 +6,7 @@ SDL_Event GameManager::mEvent;
 
 std::vector<Beatmap> GameManager::BeatmapList;
 
-int index = 0;
+int bmIndex = 0;
 
 int diffIndex = 0;
 
@@ -146,6 +146,8 @@ void GameManager::MainScreen()
 
         mGraphics->Render();
     }
+
+    SelectionMode::Release();
 }
 
 void GameManager::handleKeyboard()
@@ -165,28 +167,28 @@ void GameManager::handleKeyboard()
             else if (mEvent.key.keysym.sym == SDLK_RETURN)
             {
                 Mix_HaltMusic();
-                newGame = new PlayField(BeatmapList[index], diffIndex);
+                newGame = new PlayField(BeatmapList[bmIndex], diffIndex);
                 delete newGame;
                 newGame = nullptr;
                 mQuit = false;
             }
-            else if (mEvent.key.keysym.sym == SDLK_a && !aKeyDown)
+            else if (mEvent.key.keysym.sym == SDLK_LEFT && !aKeyDown)
             {
                 mAudioMgr->PlaySFX("Res\\menu-play-click.ogg", -1);
-                --index;
+                --bmIndex;
                 diffIndex = 0;
                 aKeyDown = true;
                 Mix_HaltMusic();
             }
-            else if (mEvent.key.keysym.sym == SDLK_d && !dKeyDown)
+            else if (mEvent.key.keysym.sym == SDLK_RIGHT && !dKeyDown)
             {
                 mAudioMgr->PlaySFX("Res\\menu-play-click.ogg", -1);
-                ++index;
+                ++bmIndex;
                 diffIndex = 0;
                 dKeyDown = true;
                 Mix_HaltMusic();
             }
-            else if (mEvent.key.keysym.sym == SDLK_w && !wKeyDown)
+            else if (mEvent.key.keysym.sym == SDLK_UP && !wKeyDown)
             {
                 mAudioMgr->PlaySFX("Res\\menu-play-click.ogg", -1);
                 wKeyDown = true;
@@ -195,50 +197,73 @@ void GameManager::handleKeyboard()
 
                 --diffIndex;
             }
-            else if (mEvent.key.keysym.sym == SDLK_s && !sKeyDown)
+            else if (mEvent.key.keysym.sym == SDLK_DOWN && !sKeyDown)
             {
                 mAudioMgr->PlaySFX("Res\\menu-play-click.ogg", -1);
                 sKeyDown = true;
 
-                if (diffIndex == BeatmapList[index].beatmapDifficulty.size() - 1) return;
+                if (diffIndex == (int)BeatmapList[bmIndex].beatmapDifficulty.size() - 1) return;
 
                 ++diffIndex;
             }
         }
         else if (mEvent.type == SDL_KEYUP)
         {
-            if (mEvent.key.keysym.sym == SDLK_a)
+            if (mEvent.key.keysym.sym == SDLK_LEFT)
             {
                 aKeyDown = false;
             }
-            if (mEvent.key.keysym.sym == SDLK_d)
+            if (mEvent.key.keysym.sym == SDLK_RIGHT)
             {
                 dKeyDown = false;
             }
-            if (mEvent.key.keysym.sym == SDLK_w)
+            if (mEvent.key.keysym.sym == SDLK_UP)
             {
                 wKeyDown = false;
             }
-            if (mEvent.key.keysym.sym == SDLK_s)
+            if (mEvent.key.keysym.sym == SDLK_DOWN)
             {
                 sKeyDown = false;
             }
         }
         else if (mEvent.type == SDL_MOUSEBUTTONDOWN)
         {
-            if (mainMenu->getButtonClicked(mEvent.button.x, mEvent.button.y) == "menu-back")
+            std::string TYPE = mainMenu->getButtonClicked();
+
+            if (TYPE == "NULL") return;
+
+            if (TYPE == "menu-back")
             {
                 mAudioMgr->PlaySFX("Res\\menu-back-click.ogg", -1);
 
                 SDL_Delay(100);
                 mQuit = true;
             }
-            if (mainMenu->getButtonClicked(mEvent.button.x, mEvent.button.y) == "selection-random-over")
+            if (TYPE == "selection-random-over")
             {
                 mAudioMgr->PlaySFX("Res\\menuHit.ogg", -1);
-                index = std::rand() % BeatmapListSize;
+                bmIndex = std::rand() % BeatmapListSize;
                 diffIndex = 0;
                 Mix_HaltMusic();
+            }
+
+            char num = TYPE.back();
+            TYPE.pop_back();
+
+            if (TYPE == "menu_button_")
+            {
+                if (diffIndex != (num - '0'))
+                {
+                    diffIndex = num - '0';
+                }
+                else
+                {
+                    Mix_HaltMusic();
+                    newGame = new PlayField(BeatmapList[bmIndex], diffIndex);
+                    delete newGame;
+                    newGame = nullptr;
+                    mQuit = false;
+                }
             }
         }
     }
@@ -259,12 +284,12 @@ void GameManager::SelectionMode()
 
         handleKeyboard();
 
-        if (index < 0) index += BeatmapListSize;
-        if (index >= BeatmapListSize) index %= BeatmapListSize;
+        if (bmIndex < 0) bmIndex += BeatmapListSize;
+        if (bmIndex >= BeatmapListSize) bmIndex %= BeatmapListSize;
 
         mGraphics->ClearBackbuffer();
 
-        mainMenu->Update(index, diffIndex);
+        mainMenu->Update(bmIndex, diffIndex);
 
         mainMenu->Render();
 

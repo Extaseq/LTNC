@@ -14,9 +14,128 @@
 
 #include "Graphics.h"
 #include "AssetManager.h"
-#include "UserInterface.h"
+#include "Button.h"
 #include "AudioManager.h"
 #include "Beatmap/Beatmap.h"
+
+struct Text
+{
+    SDL_FRect dstRect;
+
+    SDL_Texture* texture;
+
+    Text(const std::string& text, int x, int y, int size, bool dimmed = false)
+    {
+        texture = Graphics::Instance()->LoadText(text, size, dimmed);
+
+        int w, h;
+
+        SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+
+        dstRect = {static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h)};
+    }
+
+    void Zoom()
+    {
+        // dstRect.x = dstRect.x - 0.075 * dstRect.w;
+
+        dstRect.y = dstRect.y - 0.075 * dstRect.h;
+
+        dstRect.w *= 1.15, dstRect.h *= 1.15;
+    }
+
+    void UnZoom()
+    {
+        dstRect.w /= 1.15, dstRect.h /= 1.15;
+
+        // dstRect.x = dstRect.x + 0.075 * dstRect.w;
+
+        dstRect.y = dstRect.y + 0.075 * dstRect.h;
+    }
+
+    void Draw()
+    {
+        Graphics::Instance()->DrawTexture(texture, &dstRect);
+    }
+};
+
+class Menu_Button : public Button
+{
+private:
+
+    std::string beatmap_bg = "";
+
+    std::vector<Text> Info;
+
+    int index;
+
+    SDL_FRect miniMap;
+
+    bool Zoomed = false;
+
+public:
+
+    Menu_Button(int x, int y, const std::string& bg, int diffIndex, const Beatmap& beatmap)
+        : Button("menu-button-background", x, y, 1968, 301, true, HOVER_TYPE_GLOW)
+    {
+        beatmap_bg = bg;
+
+        index = diffIndex;
+
+        name = "menu_button_" + std::to_string(index);
+
+        Info.push_back(Text(beatmap.beatmapMetadata.Title, 2500, y + 20, 100));
+
+        Info.push_back(Text(beatmap.beatmapMetadata.Artist, 2500, y + 120, 60));
+
+        Info.push_back(Text(beatmap.beatmapDifficulty[diffIndex].difficultName, 2500, y + 220, 40));
+
+        miniMap = {2162, y + 28, 320, 246};
+    }
+
+    void Zoom()
+    {
+        if (Zoomed == true) return;
+
+        for (Text &T : Info) T.Zoom();
+
+        pos->x = pos->x - 0.075 * pos->w;
+
+        pos->y = pos->y - 0.075 * pos->h;
+
+        pos->w *= 1.15, pos->h *= 1.15;
+
+        miniMap = {2018, miniMap.y - 18, 320 * 1.15, 246 * 1.15};
+
+        Zoomed = true;
+    }
+
+    void UnZoom()
+    {
+        if (Zoomed == false) return;
+
+        for (Text &T : Info) T.UnZoom();
+
+        pos->w /= 1.15, pos->h /= 1.15;
+
+        pos->x = pos->x + pos->w * 0.075;
+
+        pos->y = pos->y + pos->h * 0.075;
+
+        miniMap = {2164, miniMap.y + 18, 320, 246};
+
+        Zoomed = false;
+    }
+
+    void Render()
+    {
+        if (OnMouseHover()) Glow();
+        Graphics::Instance()->DrawTexture(AssetManager::Instance()->GetTexture(fileName), pos);
+        UnGlow();
+        Graphics::Instance()->DrawTexture(AssetManager::Instance()->GetTexture(beatmap_bg), &miniMap);
+        for (auto &T : Info) T.Draw();
+    }
+};
 
 class SelectionMode
 {
@@ -24,8 +143,9 @@ private:
 
     static SelectionMode* sInstance;
 
-    /*-----------------------Name - Texture-----*/
-    std::vector<std::pair<std::string, UI*>> sections;
+    std::vector<Button*> sections;
+
+    std::vector<Menu_Button*> menu_button;
 
     SDL_Texture* currentArtist;
 
@@ -59,7 +179,7 @@ public:
 
     void Update(int index, int diffIndex);
 
-    std::string getButtonClicked(int x, int y);
+    std::string getButtonClicked();
 
     void Render();
 

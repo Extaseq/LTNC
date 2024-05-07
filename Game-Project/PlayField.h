@@ -4,8 +4,12 @@
 #include "AssetManager.h"
 #include "AudioManager.h"
 #include "Graphics.h"
-#include "UserInterface.h"
+#include "Button.h"
 #include "Beatmap/Beatmap.h"
+#include "Cursor.h"
+
+#include <deque>
+#include <vector>
 
 struct ScrollingBackground
 {
@@ -28,17 +32,9 @@ private:
 
     const int FPS = 60;
 
-    UI* scoreBar_bg;
+    std::vector<Button*> playSections;
 
-    UI* scoreBar_color;
-
-    UI* taiko_bar_left;
-
-    UI* taiko_bar_right;
-
-    UI* taikohitcircle;
-
-    UI* taikohitcircleoverlay;
+    std::vector<Button*> pauseMenu;
 
     AssetManager* mAssetMgr;
 
@@ -53,6 +49,8 @@ public:
     PlayField(const Beatmap& beatmap, int diffIndex);
 
     void Open();
+
+    void OpenPauseMenu();
 
     void Update();
 

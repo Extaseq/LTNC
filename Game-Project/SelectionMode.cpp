@@ -16,7 +16,8 @@ SelectionMode* SelectionMode::Instance()
 
 void SelectionMode::Release()
 {
-
+    delete sInstance;
+    sInstance = nullptr;
 }
 
 SelectionMode::SelectionMode()
@@ -27,84 +28,83 @@ SelectionMode::SelectionMode()
 
     mAssetMgr = AssetManager::Instance();
 
-    sections.push_back(UI::make_pair("songselect-top", 0, -1, 3652, 1336, false));
+    sections.push_back(new Button("songselect-top", 0, -1, 3652, 1336));
 
-    sections.push_back(UI::make_pair("songselect-bottom", 0, 1761, 3840, 399, false));
+    sections.push_back(new Button("songselect-bottom", 0, 1761, 3840, 399));
 
-    sections.push_back(UI::make_pair("selection-mode", 632.0, -1.0, 3208.0, 2161.0, false));
-    sections.back().second->setSrc(0, 68, 2284, 1542);
+    sections.push_back(new Button("selection-mode", 632.0, -1.0, 3208.0, 2161.0));
+    sections.back()->setSrc(0, 68, 2284, 1542);
 
-    sections.push_back(UI::make_pair("selection-random-over", 1106, 1939, 259, 221, true));
+    sections.push_back(new Button("selection-random-over", 1106, 1939, 259, 221, true, HOVER_TYPE_GLOW));
 
-    sections.push_back(UI::make_pair("menu-back", 0, 1896, 596, 264, true));
+    sections.push_back(new Button("menu-back", 0, 1896, 596, 264, true, HOVER_TYPE_GLOW));
 
     menuButtonBackground = mAssetMgr->GetTexture("Res\\menu-button-background@2x.png");
 }
 
 SelectionMode::~SelectionMode()
 {
+    for (SDL_Texture* texture : diffList)
+    {
+        SDL_DestroyTexture(texture);
+    }
 
+    for (SDL_Texture* texture : bmInfo)
+    {
+        SDL_DestroyTexture(texture);
+    }
 }
 
-std::string SelectionMode::getButtonClicked(int x, int y)
+std::string SelectionMode::getButtonClicked()
 {
     for (auto section : sections)
     {
-        if (section.second->OnMouseHover(x, y))
+        if (section->OnMouseHover())
         {
-            return section.second->getName();
+            return section->getName();
         }
     }
-    return "NULL";
-}
 
-void SelectionMode::DisplayDifficulty()
-{
-    int nDiff = static_cast<int>(currentBeatmap.beatmapDifficulty.size());
-
-    int gap = 1505 / nDiff;
-
-    int yPosStart = 350; // x = 2140
-
-    double scale;
-
-    for (int i = 0; i < nDiff; ++i)
+    for (auto button : menu_button)
     {
-        if (i == diffIndex) scale = 1.1;
-        else scale = 1;
-
-        yPosStart = 350 + i * gap + gap / 2 - 301 / 2;
-
-        SDL_FRect dstRect = {2140, yPosStart, 1968 * scale, 301 * scale};
-
-        mGraphics->DrawTexture(menuButtonBackground, &dstRect);
-
-        SDL_FRect mini = {2164, yPosStart + 34, 320 * scale, 240 * scale};
-
-        mGraphics->DrawTexture(background, &mini);
-
-        mGraphics->DrawText(currentTitle, 2500 + (scale - 1) * 300, yPosStart + 20);
-
-        mGraphics->DrawText(currentArtist, 2500 + (scale - 1) * 300, yPosStart + 120);
-
-        mGraphics->DrawText(diffList[i], 2500 + (scale - 1) * 300, yPosStart + 220);
+        if (button->OnMouseHover())
+        {
+            return button->getName();
+        }
     }
+
+    return "NULL";
 }
 
 void SelectionMode::Update(int beatmapIndex, int diffIndex_)
 {
     diffIndex = diffIndex_;
 
-    for (std::pair<std::string, UI*> section : sections)
+    for (Button* section : sections)
     {
-        section.second->Update();
+        section->Update();
     }
 
+    for (size_t index = 0; index < menu_button.size(); ++index)
+    {
+        if (index == diffIndex)
+        {
+            menu_button[index]->Zoom();
+        }
+        else
+        {
+            menu_button[index]->UnZoom();
+        }
+    }
+
+    // Avoid updating too much
     if (prevIndex == beatmapIndex) return;
 
     bmInfo.clear();
 
     diffList.clear();
+
+    menu_button.clear();
 
     background = mAssetMgr->GetTexture(GameManager::BeatmapList[beatmapIndex].beatmapMetadata.BackgroundFile);
 
@@ -138,6 +138,17 @@ void SelectionMode::Update(int beatmapIndex, int diffIndex_)
         );
     }
 
+    // From here
+    int nDiff = static_cast<int>(currentBeatmap.beatmapDifficulty.size());
+
+    double gap = 1505 / nDiff;
+
+    for (int i = 0, y; i < nDiff; ++i)
+    {
+        menu_button.push_back(new Menu_Button(2140, 350 + i * gap + gap / 2 - 301 / 2, currentBeatmap.beatmapMetadata.BackgroundFile, i, currentBeatmap));
+    }
+    // To here
+
     prevIndex = beatmapIndex;
 }
 
@@ -145,14 +156,14 @@ void SelectionMode::Render()
 {
     mGraphics->DrawTexture(background, NULL, NULL);
 
-    DisplayDifficulty();
+    for (Menu_Button* button : menu_button) button->Render();
 
-    for (std::pair<std::string, UI*> section : sections)
+    for (Button* section : sections)
     {
-        section.second->Render();
+        section->Render();
     }
 
-    sections.back().second->Render();
+    sections.back()->Render();
 
     mGraphics->DrawText(bmInfo[0], 200, 10);
     mGraphics->DrawText(bmInfo[1], 200, 80);
