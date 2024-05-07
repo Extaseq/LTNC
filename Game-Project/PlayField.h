@@ -1,15 +1,18 @@
 #ifndef _PLAYFIELD_H
 #define _PLAYFIELD_H
 
-#include "AssetManager.h"
 #include "AudioManager.h"
 #include "Graphics.h"
-#include "Button.h"
 #include "Beatmap/Beatmap.h"
 #include "Cursor.h"
+#include "Menu.h"
 
 #include <deque>
 #include <vector>
+
+#define CONTINUE 1
+#define RETRY 2
+#define BACK 3
 
 struct ScrollingBackground
 {
@@ -23,7 +26,6 @@ struct ScrollingBackground
 
         if (scrollingOffset < 0) scrollingOffset = 3840;
     }
-
 };
 
 class PlayField
@@ -34,7 +36,9 @@ private:
 
     std::vector<Button*> playSections;
 
-    std::vector<Button*> pauseMenu;
+    Menu* PauseMenu, * FailMenu;
+
+    std::string audioFile;
 
     AssetManager* mAssetMgr;
 
@@ -48,9 +52,9 @@ public:
 
     PlayField(const Beatmap& beatmap, int diffIndex);
 
-    void Open();
+    bool Open();
 
-    void OpenPauseMenu();
+    int OpenMenu(Menu* menu);
 
     void Update();
 

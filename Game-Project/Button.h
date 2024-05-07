@@ -46,9 +46,9 @@ public:
 
     void Update();
 
-    void Render();
+    void Draw();
 
-    std::string getName()
+    std::string GetName()
     {
         return name;
     }

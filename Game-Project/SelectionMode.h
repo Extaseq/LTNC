@@ -1,5 +1,5 @@
-#ifndef _MENU_H
-#define _MENU_H
+#ifndef _SELECTIONMODE_H
+#define _SELECTIONMODE_H
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -192,4 +192,4 @@ private:
     ~SelectionMode();
 };
 
-#endif // _MENU_H
+#endif // _SELECTIONMODE_H

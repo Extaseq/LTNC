@@ -43,12 +43,15 @@
 		<Unit filename="Beatmap/BeatmapMetadata.h" />
 		<Unit filename="Beatmap/Formats/Decoder.h" />
 		<Unit filename="Beatmap/Formats/Parsing.h" />
+		<Unit filename="Button.cpp" />
+		<Unit filename="Button.h" />
 		<Unit filename="Cursor.cpp" />
 		<Unit filename="Cursor.h" />
 		<Unit filename="GameManager.cpp" />
 		<Unit filename="GameManager.h" />
 		<Unit filename="Graphics.cpp" />
 		<Unit filename="Graphics.h" />
+		<Unit filename="Menu.h" />
 		<Unit filename="MyVector.cpp" />
 		<Unit filename="MyVector.h" />
 		<Unit filename="PlayField.cpp" />
@@ -57,8 +60,6 @@
 		<Unit filename="SelectionMode.h" />
 		<Unit filename="Sprite.cpp" />
 		<Unit filename="Sprite.h" />
-		<Unit filename="UserInterface.cpp" />
-		<Unit filename="UserInterface.h" />
 		<Unit filename="logError.txt" />
 		<Unit filename="main.cpp" />
 		<Extensions>

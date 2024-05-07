@@ -61,7 +61,7 @@ std::string SelectionMode::getButtonClicked()
     {
         if (section->OnMouseHover())
         {
-            return section->getName();
+            return section->GetName();
         }
     }
 
@@ -69,7 +69,7 @@ std::string SelectionMode::getButtonClicked()
     {
         if (button->OnMouseHover())
         {
-            return button->getName();
+            return button->GetName();
         }
     }
 
@@ -79,6 +79,13 @@ std::string SelectionMode::getButtonClicked()
 void SelectionMode::Update(int beatmapIndex, int diffIndex_)
 {
     diffIndex = diffIndex_;
+
+    if (Mix_PlayingMusic() != 1)
+    {
+        mAudioMgr->PlayMusic(currentBeatmap.beatmapMetadata.AudioFileDir);
+
+        Mix_SetMusicPosition(static_cast<float>(currentBeatmap.beatmapMetadata.PreviewTime / 1000.0));
+    }
 
     for (Button* section : sections)
     {
@@ -120,13 +127,6 @@ void SelectionMode::Update(int beatmapIndex, int diffIndex_)
         "Length: " + Parsing::secondsToTimeString(time) + "  BPM: " + std::to_string(currentBeatmap.beatmapInfo.BPM), 40
     ));
 
-    if (Mix_PlayingMusic() != 1)
-    {
-        mAudioMgr->PlayMusic(currentBeatmap.beatmapMetadata.AudioFileDir);
-
-        Mix_SetMusicPosition(static_cast<float>(currentBeatmap.beatmapMetadata.PreviewTime / 1000.0));
-    }
-
     currentArtist = mGraphics->LoadText(currentBeatmap.beatmapMetadata.Artist, 60);
 
     currentTitle = mGraphics->LoadText(currentBeatmap.beatmapMetadata.Title, 100);
@@ -160,10 +160,10 @@ void SelectionMode::Render()
 
     for (Button* section : sections)
     {
-        section->Render();
+        section->Draw();
     }
 
-    sections.back()->Render();
+    sections.back()->Draw();
 
     mGraphics->DrawText(bmInfo[0], 200, 10);
     mGraphics->DrawText(bmInfo[1], 200, 80);

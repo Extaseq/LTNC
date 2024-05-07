@@ -21,25 +21,34 @@ PlayField::PlayField(const Beatmap& beatmap, int diffIndex)
     playSections.push_back(new Button("scorebar-colour", 14, 44, 1363, 157));
 
     // Pause menu
+    PauseMenu = new Menu("pause-overlay");
 
-    pauseMenu.push_back(new Button("pause-overlay", 0, 0, 3840, 2160));
+    PauseMenu->AddButton(new Button("pause-overlay", 0, 0, 3840, 2160));
 
-    pauseMenu.push_back(new Button("pause-continue", 360, 285, 3109, 686, true, 2));
+    PauseMenu->AddButton(new Button("pause-continue", 360, 285, 3109, 686, true, 2));
 
-    pauseMenu.push_back(new Button("pause-retry", 1342, 968, 1145, 317, true, 2));
+    PauseMenu->AddButton(new Button("pause-retry", 1342, 968, 1145, 317, true, 2));
 
-    pauseMenu.push_back(new Button("pause-back", 390, 1343, 3052, 556, true, 2));
+    PauseMenu->AddButton(new Button("pause-back", 390, 1343, 3052, 556, true, 2));
 
     // background = mAssetMgr->GetTexture(beatmap.beatmapMetadata.BackgroundFile);
 
     taikoslider.texture = mAssetMgr->GetTexture("Res\\taiko-Slider@2x.png");
 
-    SDL_Delay(1000);
+    audioFile = beatmap.beatmapMetadata.AudioFileDir;
 
-    mAudioMgr->PlayMusic(beatmap.beatmapMetadata.AudioFileDir, 0);
-
-    Open();
+    while (Open() == true) {}
 }
+
+int GetButtonOpening(const std::string& button_name)
+{
+    if (button_name == "pause-continue") return CONTINUE;
+
+    if (button_name == "pause-retry") return RETRY;
+
+    if (button_name == "pause-back") return BACK;
+}
+
 
 void PlayField::Update()
 {
@@ -52,15 +61,14 @@ void PlayField::Render()
 
     mGraphics->DrawText(taikoslider.texture, taikoslider.scrollingOffset - 3840, 0);
 
-    for (Button* section : playSections)
-    {
-        section->Render();
-    }
+    for (Button* section : playSections) section->Draw();
 }
 
-void PlayField::Open()
+bool PlayField::Open()
 {
     int HP = 100;
+
+    mAudioMgr->PlayMusic(audioFile, 0);
 
     const int frameDelay = 1000 / FPS;
 
@@ -77,7 +85,23 @@ void PlayField::Open()
             if (event.key.keysym.sym == SDLK_ESCAPE)
             {
                 Mix_PauseMusic();
-                OpenPauseMenu();
+                int CHOICE = OpenMenu(PauseMenu);
+                switch (CHOICE)
+                {
+                case CONTINUE:
+                    break;
+
+                case RETRY:
+                    return true;
+                    break;
+
+                case BACK:
+                    Mix_HaltMusic();
+                    return false;
+                
+                default:
+                    break;
+                }
                 Mix_ResumeMusic();
             }
         }
@@ -98,32 +122,36 @@ void PlayField::Open()
     }
 
     Mix_HaltMusic();
+    return false;
 }
 
-void PlayField::OpenPauseMenu()
+int PlayField::OpenMenu(Menu* menu)
 {
     const int frameDelay = 1000 / FPS;
 
     Uint32 frameStart;
     int frameTime;
 
-    bool open = true;
-
-    while (open)
+    while (true)
     {
         frameStart = SDL_GetTicks();
 
-        for (Button* section : pauseMenu)
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
         {
-            section->Update();
+            if (event.type == SDL_MOUSEBUTTONDOWN)
+            {
+                std::string choice = menu->GetButtonClicked();
+
+                if (choice != "NULL") return GetButtonOpening(choice);
+            }
         }
+
+        menu->Update();
 
         mGraphics->ClearBackbuffer();
 
-        for (Button* section : pauseMenu)
-        {
-            section->Render();
-        }
+        menu->Draw();
 
         Cursor::Instance()->Render();
 

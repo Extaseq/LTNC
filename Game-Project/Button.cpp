@@ -107,7 +107,7 @@ void Button::Update()
     }
 }
 
-void Button::Render()
+void Button::Draw()
 {
     Graphics::Instance()->DrawTexture(AssetMgr->GetTexture(fileName), pos, clip);
 }
