@@ -35,10 +35,10 @@ AudioManager::~AudioManager()
 
 void AudioManager::PlayMusic(std::string filename, int loops)
 {
-    Mix_PlayMusic(mAssetMgr->getMusic(filename), loops);
+    Mix_PlayMusic(mAssetMgr->GetMusic(filename), loops);
 }
 
 void AudioManager::PlaySFX(std::string filename, int channel)
 {
-    Mix_PlayChannel(channel, mAssetMgr->getSFX(filename), 0);
+    Mix_PlayChannel(channel, mAssetMgr->GetSFX(filename), 0);
 }

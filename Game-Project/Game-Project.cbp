@@ -51,6 +51,8 @@
 		<Unit filename="GameManager.h" />
 		<Unit filename="Graphics.cpp" />
 		<Unit filename="Graphics.h" />
+		<Unit filename="InputManager.cpp" />
+		<Unit filename="InputManager.h" />
 		<Unit filename="Menu.h" />
 		<Unit filename="MyVector.cpp" />
 		<Unit filename="MyVector.h" />

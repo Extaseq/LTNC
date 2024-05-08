@@ -43,8 +43,10 @@ SDL_Texture* AssetManager::GetTexture(const std::string& fileName)
     return mTextures[fileName];
 }
 
-Mix_Music* AssetManager::getMusic(const std::string& dir)
+Mix_Music* AssetManager::GetMusic(const std::string& dir)
 {
+    if (dir == "") return nullptr;
+
     if (mMusics.find(dir) == mMusics.end())
     {
         mMusics[dir] = Mix_LoadMUS(dir.c_str());
@@ -56,7 +58,7 @@ Mix_Music* AssetManager::getMusic(const std::string& dir)
     return mMusics[dir];
 }
 
-Mix_Chunk* AssetManager::getSFX(const std::string& dir)
+Mix_Chunk* AssetManager::GetSFX(const std::string& dir)
 {
     if (mSFX.find(dir) == mSFX.end())
     {

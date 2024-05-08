@@ -80,13 +80,6 @@ void SelectionMode::Update(int beatmapIndex, int diffIndex_)
 {
     diffIndex = diffIndex_;
 
-    if (Mix_PlayingMusic() != 1)
-    {
-        mAudioMgr->PlayMusic(currentBeatmap.beatmapMetadata.AudioFileDir);
-
-        Mix_SetMusicPosition(static_cast<float>(currentBeatmap.beatmapMetadata.PreviewTime / 1000.0));
-    }
-
     for (Button* section : sections)
     {
         section->Update();
@@ -121,7 +114,7 @@ void SelectionMode::Update(int beatmapIndex, int diffIndex_)
         "(" + currentBeatmap.beatmapMetadata.Artist + ") - " + currentBeatmap.beatmapMetadata.Title, 50)
     );
 
-    float time = Mix_MusicDuration(AssetManager::Instance()->getMusic(currentBeatmap.beatmapMetadata.AudioFileDir));
+    float time = Mix_MusicDuration(AssetManager::Instance()->GetMusic(currentBeatmap.beatmapMetadata.AudioFileDir));
 
     bmInfo.push_back(mGraphics->LoadText(
         "Length: " + Parsing::secondsToTimeString(time) + "  BPM: " + std::to_string(currentBeatmap.beatmapInfo.BPM), 40
@@ -154,6 +147,13 @@ void SelectionMode::Update(int beatmapIndex, int diffIndex_)
 
 void SelectionMode::Render()
 {
+    if (Mix_PlayingMusic() != 1)
+    {
+        mAudioMgr->PlayMusic(currentBeatmap.beatmapMetadata.AudioFileDir);
+
+        Mix_SetMusicPosition(static_cast<float>(currentBeatmap.beatmapMetadata.PreviewTime / 1000.0));
+    }
+
     mGraphics->DrawTexture(background, NULL, NULL);
 
     for (Menu_Button* button : menu_button) button->Render();
@@ -163,7 +163,7 @@ void SelectionMode::Render()
         section->Draw();
     }
 
-    sections.back()->Draw();
+    // sections.back()->Draw();
 
     mGraphics->DrawText(bmInfo[0], 200, 10);
     mGraphics->DrawText(bmInfo[1], 200, 80);

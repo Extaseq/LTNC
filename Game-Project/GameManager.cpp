@@ -30,10 +30,7 @@ GameManager::GameManager()
 {
     std::srand(std::time(nullptr));
 
-    mQuit = false;
-
     mGraphics = Graphics::Instance();
-
     mAudioMgr = AudioManager::Instance();
 
     if (!Graphics::Initialized())
@@ -48,6 +45,8 @@ GameManager::GameManager()
     LoadBeatmap();
 
     BeatmapListSize = BeatmapList.size();
+
+    mQuit = false;
 }
 
 GameManager::~GameManager()
@@ -121,15 +120,18 @@ void GameManager::MainScreen()
 {
     FadeIn();
 
-    while (true)
+    bool screen = true;
+
+    while (screen)
     {
         while (SDL_PollEvent(&mEvent))
         {
-            if (mEvent.type == SDL_QUIT)
+            if (mEvent.key.keysym.sym == SDLK_ESCAPE)
             {
-                return;
+                screen = false;
+                break;
             }
-            if (mEvent.type == SDL_KEYDOWN || mEvent.type == SDL_MOUSEBUTTONDOWN)
+            else if (mEvent.type == SDL_KEYDOWN || mEvent.type == SDL_MOUSEBUTTONDOWN)
             {
                 mQuit = false;
                 SelectionMode();

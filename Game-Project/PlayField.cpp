@@ -3,14 +3,12 @@
 PlayField::PlayField(const Beatmap& beatmap, int diffIndex)
 {
     mAssetMgr = AssetManager::Instance();
-
     mGraphics = Graphics::Instance();
-
     mAudioMgr = AudioManager::Instance();
 
-    playSections.push_back(new Button("taiko-bar-left", 0, 610, 510, 492));
+    playSections.push_back(new Button("taiko-bar-left", 0, 610, 510, 492 + 50));
 
-    playSections.push_back(new Button("taiko-bar-right", 510, 616, 3840 - 510, 476));
+    playSections.push_back(new Button("taiko-bar-right", 510, 616, 3840 - 510, 476 + 50));
 
     playSections.push_back(new Button("taikohitcircle", 605, 768 - 30, 236, 236));
 
@@ -49,6 +47,31 @@ int GetButtonOpening(const std::string& button_name)
     if (button_name == "pause-back") return BACK;
 }
 
+void PlayField::Kats(bool left)
+{
+    SDL_FRect dstRect = {0, 608, 254, 546};
+    std::string path = "Res\\taiko-drum-inner-right@2x.png";
+    if (!left)
+    {
+        dstRect = {254, 608, 254, 546};
+        path = "Res\\taiko-drum-inner-left@2x.png";
+    }
+
+    mGraphics->DrawTexture(mAssetMgr->GetTexture(path), &dstRect, NULL, 180);
+}
+
+void PlayField::Dons(bool right)
+{
+    SDL_FRect dstRect = {0, 608, 254, 546};
+    std::string path = "Res\\taiko-drum-outer-right@2x.png";
+    if (!right)
+    {
+        dstRect = {254, 608, 254, 546};
+        path = "Res\\taiko-drum-outer-left@2x.png";
+    }
+
+    mGraphics->DrawTexture(mAssetMgr->GetTexture(path), &dstRect, NULL, 180);
+}
 
 void PlayField::Update()
 {
@@ -62,6 +85,11 @@ void PlayField::Render()
     mGraphics->DrawText(taikoslider.texture, taikoslider.scrollingOffset - 3840, 0);
 
     for (Button* section : playSections) section->Draw();
+}
+
+void PlayField::HandleKeyboard()
+{
+
 }
 
 bool PlayField::Open()
@@ -79,39 +107,65 @@ bool PlayField::Open()
     {
         frameStart = SDL_GetTicks();
 
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
-        {
-            if (event.key.keysym.sym == SDLK_ESCAPE)
-            {
-                Mix_PauseMusic();
-                int CHOICE = OpenMenu(PauseMenu);
-                switch (CHOICE)
-                {
-                case CONTINUE:
-                    break;
-
-                case RETRY:
-                    return true;
-                    break;
-
-                case BACK:
-                    Mix_HaltMusic();
-                    return false;
-                
-                default:
-                    break;
-                }
-                Mix_ResumeMusic();
-            }
-        }
-
+        /*- Update -*/
         Update();
+
 
         mGraphics->ClearBackbuffer();
 
+        /*- Render -*/
         Render();
 
+        /**/
+
+        SDL_PumpEvents();
+
+        while (SDL_PollEvent(&mEvent))
+        {
+            if (mEvent.type == SDL_KEYDOWN && mEvent.key.repeat == 0)
+            {
+                if (mEvent.key.keysym.sym == SDLK_d)
+                {
+                    Dons(true);
+                }
+                if (mEvent.key.keysym.sym == SDLK_f)
+                {
+                    Kats(true);
+                }
+                if (mEvent.key.keysym.sym == SDLK_j)
+                {
+                    Kats(false);
+                }
+                if (mEvent.key.keysym.sym == SDLK_k)
+                {
+                    Dons(false);
+                }
+                if (mEvent.key.keysym.sym == SDLK_ESCAPE)
+                {
+                    Mix_PauseMusic();
+                    int CHOICE = OpenMenu(PauseMenu);
+                    switch (CHOICE)
+                    {
+                    case CONTINUE:
+                        break;
+
+                    case RETRY:
+                        return true;
+                        break;
+
+                    case BACK:
+                        Mix_HaltMusic();
+                        return false;
+
+                    default:
+                        break;
+                    }
+                    Mix_ResumeMusic();
+                }
+            }
+        }
+
+        /**/
         mGraphics->Render();
 
         frameTime = SDL_GetTicks() - frameStart;

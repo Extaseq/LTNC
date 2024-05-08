@@ -26,9 +26,9 @@ public:
 
     SDL_Texture* GetTexture(const std::string& fileName);
 
-    Mix_Music* getMusic(const std::string& dir);
+    Mix_Music* GetMusic(const std::string& dir);
 
-    Mix_Chunk* getSFX(const std::string& dir);
+    Mix_Chunk* GetSFX(const std::string& dir);
 
 private:
 

@@ -38,12 +38,12 @@ private:
 
     Menu* PauseMenu, * FailMenu;
 
+    SDL_Event mEvent;
+
     std::string audioFile;
 
     AssetManager* mAssetMgr;
-
     Graphics* mGraphics;
-
     AudioManager* mAudioMgr;
 
     ScrollingBackground taikoslider;
@@ -54,9 +54,15 @@ public:
 
     bool Open();
 
+    void Kats(bool left);
+
+    void Dons(bool right);
+
     int OpenMenu(Menu* menu);
 
     void Update();
+
+    void HandleKeyboard();
 
     void Render();
 };
