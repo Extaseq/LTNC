@@ -10,6 +10,8 @@
 
 #define SPEED_RATIO 7.5 /*For 3840x2160 screen ratio*/
 #define PIXEL_TO_MOVE 3300
+#define KATS 1
+#define DONS 0
 
 class HitCircle
 {
@@ -23,24 +25,37 @@ private:
 
     double AppearTime = -1.0;
 
+    int Time = 0;
+
     bool BigSize = false;
 
     bool Disable = false;
+
+    int Type = DONS;
 
 public:
 
     HitCircle() = default;
 
-    HitCircle(int Type, int Hitsound, int appearTime, double velocity_)
-        : dir(""), Pos{3840, 735, 248, 248}, Velocity(velocity_ / 1000), AppearTime(appearTime), BigSize(false), Disable(false)
+    HitCircle(int Hitsound, double appearTime, int Time_, double velocity_)
+        : Velocity(velocity_ / 1000), AppearTime(appearTime), Time(Time_)
     {
         if (Hitsound & (1 << 0)) dir = "Res/red-";
-        if (Hitsound & (1 << 1)) dir = "Res/blue-";
-        if (Hitsound & (1 << 3)) dir = "Res/blue-";
 
+        if (Hitsound & (1 << 1))
+        {
+            dir = "Res/blue-";
+            Type = KATS;
+        }
+        if (Hitsound & (1 << 3))
+        {
+            dir = "Res/blue-";
+            Type = KATS;
+        }
         if (Hitsound & (1 << 2))
         {
             if (dir == "") dir = "Res/red-";
+            else Type = KATS;
             dir += "bigcircle.png";
             BigSize = true;
             Pos = {3840, 673, 376, 376};
@@ -48,8 +63,19 @@ public:
         else
         {
             if (dir == "") dir = "Res/red-";
+            else Type = KATS;
             dir += "hitcircle.png";
         }
+    }
+
+    int GetType() const
+    {
+        return Type;
+    }
+
+    int GetTime() const
+    {
+        return Time;
     }
 
     bool Disabled() const
@@ -62,16 +88,6 @@ public:
         return AppearTime;
     }
 
-    void SetVelocityMultiplier(double Multiplier)
-    {
-        this->Velocity *= Multiplier;
-    }
-
-    double GetVelocity()
-    {
-        return this->Velocity;
-    }
-
     void Update(int deltaTime)
     {
         Pos.x -= Velocity * deltaTime; // Delta time in miliseconds
@@ -82,10 +98,15 @@ public:
 
     void Render() const
     {
-        if (BigSize)
-            if (Pos.x <= 540) return;
+        if (BigSize) if (Pos.x <= 540) {
+            AudioManager::Instance()->PlaySFX("Res\\drum-hitnormal.wav", -1);
+            return;
+        }
 
-        if (!BigSize) if (Pos.x <= 620) return;
+        if (!BigSize) if (Pos.x <= 620) {
+            AudioManager::Instance()->PlaySFX("Res\\drum-hitnormal.wav", -1);
+            return;
+        }
 
         Graphics::Instance()->DrawTexture(
             AssetManager::Instance()->GetTexture(dir), &Pos, NULL

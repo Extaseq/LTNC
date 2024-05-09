@@ -196,7 +196,7 @@
 1715244948 source:e:\ltnc\game-project\graphics.cpp
 	"Graphics.h"
 
-1714640782 source:e:\ltnc\game-project\main.cpp
+1715295552 source:e:\ltnc\game-project\main.cpp
 	"GameManager.h"
 
 1714380501 source:e:\ltnc\game-project\myvector.cpp
@@ -226,7 +226,7 @@
 1714840713 e:\ltnc\game-project\audiomanager.h
 	"AssetManager.h"
 
-1715265459 e:\ltnc\game-project\playfield.h
+1715296598 e:\ltnc\game-project\playfield.h
 	"AudioManager.h"
 	"Graphics.h"
 	"Beatmap/Beatmap.h"
@@ -234,12 +234,13 @@
 	"Menu.h"
 	"HitCircle.h"
 	"InputManager.h"
+	"ScoreSystem.h"
 	<deque>
 	<queue>
 	<vector>
 	<unordered_map>
 
-1715267406 source:e:\ltnc\game-project\playfield.cpp
+1715295766 source:e:\ltnc\game-project\playfield.cpp
 	"PlayField.h"
 
 1715260187 e:\ltnc\game-project\menu.h
@@ -260,10 +261,17 @@
 1715267423 source:e:\ltnc\game-project\inputmanager.cpp
 	"InputManager.h"
 
-1715263465 e:\ltnc\game-project\hitcircle.h
+1715296319 e:\ltnc\game-project\hitcircle.h
 	"Graphics.h"
 	"AssetManager.h"
 	"AudioManager.h"
 	<string>
 	<vector>
+
+1715295451 source:e:\ltnc\game-project\scoresystem.cpp
+	"ScoreSystem.h"
+
+1715295101 e:\ltnc\game-project\scoresystem.h
+	<algorithm>
+	<iostream>
 

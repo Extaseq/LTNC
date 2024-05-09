@@ -59,6 +59,7 @@
 		<Unit filename="MyVector.h" />
 		<Unit filename="PlayField.cpp" />
 		<Unit filename="PlayField.h" />
+		<Unit filename="ScoreSystem.cpp" />
 		<Unit filename="ScoreSystem.h" />
 		<Unit filename="SelectionMode.cpp" />
 		<Unit filename="SelectionMode.h" />

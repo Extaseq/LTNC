@@ -8,6 +8,7 @@
 #include "Menu.h"
 #include "HitCircle.h"
 #include "InputManager.h"
+#include "ScoreSystem.h"
 
 #include <deque>
 #include <queue>
@@ -38,7 +39,7 @@ class PlayField
 {
 private:
 
-    const int FPS = 60;
+    const int FPS = 120 * 4;
 
     std::vector<Button*> playSections;
 
@@ -54,6 +55,8 @@ private:
 
     SDL_Event mEvent;
 
+    bool LastMenuOpened = false;
+
     std::string audioFile;
 
     std::vector<HitObject> mHitObjects;
@@ -62,6 +65,9 @@ private:
     Graphics* mGraphics;
     AudioManager* mAudioMgr;
     InputManager* mInputMgr;
+    ScoreSystem* mScore;
+
+    Int64 RetryOffset = 0;
 
     ScrollingBackground taikoslider;
 

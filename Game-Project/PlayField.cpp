@@ -6,6 +6,7 @@ PlayField::PlayField(const Beatmap& beatmap, int DiffIndex)
     mGraphics = Graphics::Instance();
     mAudioMgr = AudioManager::Instance();
     mInputMgr = InputManager::Instance();
+    mScore = ScoreSystem::Instance();
 
     LoadBeatmap(beatmap, DiffIndex);
 
@@ -36,13 +37,20 @@ PlayField::PlayField(const Beatmap& beatmap, int DiffIndex)
 
     taikoslider.texture = mAssetMgr->GetTexture("Res\\taiko-Slider@2x.png");
 
-    while (Open() == true) {}
+    auto SavePoint = Waiting;
+
+    while (Open() == true)
+    {
+        Waiting = SavePoint;
+        OnScreen.clear();
+    }
 }
 
 void PlayField::LoadBeatmap(const Beatmap& beatmap, int DiffIndex)
 {
-    // Use later
     int TimingPointIndex = 1;
+
+    mScore->SetOD(beatmap.beatmapDifficulty[DiffIndex].OverallDifficulty);
 
     audioFile = beatmap.beatmapMetadata.AudioFileDir;
 
@@ -59,7 +67,9 @@ void PlayField::LoadBeatmap(const Beatmap& beatmap, int DiffIndex)
 
     for (size_t index = 0; index < TotalHitObjects; ++index)
     {
-        if (HitObjects[index].time == TimingPoints[TimingPointIndex].time) TimingPointIndex++;
+        if (HitObjects[index].time >= TimingPoints[TimingPointIndex].time) TimingPointIndex++;
+
+        if (TimingPointIndex > (int)TimingPoints.size()) TimingPointIndex = (int)TimingPoints.size();
 
         double appearTime = static_cast<double>(HitObjects[index].time);
 
@@ -72,7 +82,7 @@ void PlayField::LoadBeatmap(const Beatmap& beatmap, int DiffIndex)
         appearTime = appearTime - ((PIXEL_TO_MOVE / (SliderVelocity * Multiplier)) * 1000); /*In miliseconds*/
 
         Waiting.push(HitCircle(
-            HitObjects[index].type, HitObjects[index].hitSound, appearTime + 250, SliderVelocity * Multiplier
+            HitObjects[index].hitSound, appearTime, HitObjects[index].time, SliderVelocity * Multiplier
         ));
     }
 }
@@ -160,7 +170,14 @@ bool PlayField::Open()
     Int64 previousTime = SDL_GetTicks();
     Int64 mStartTime = previousTime;
 
+    if (RetryOffset != 0)
+    {
+        mStartTime += RetryOffset;
+        RetryOffset = 0;
+    }
+
     if (Offset < 0) mStartTime -= Offset;
+    Offset = 0;
 
     int deltaTime = 0;
 
@@ -169,6 +186,12 @@ bool PlayField::Open()
         frameStart = SDL_GetTicks();
 
         deltaTime = frameStart - previousTime;
+        if (LastMenuOpened)
+        {
+            deltaTime -= Offset;
+            mStartTime += Offset;
+            LastMenuOpened = false;
+        }
 
         if (!Waiting.empty())
         {
@@ -190,17 +213,61 @@ bool PlayField::Open()
             }
         }
 
-        if (Waiting.empty()) if (Mix_PlayingMusic() != -1) Playing = false;
+        if (Waiting.empty()) if (Mix_PlayingMusic() != 1) Playing = false;
 
         mGraphics->ClearBackbuffer();
         Render();
 
         while (SDL_PollEvent(&mEvent)) {}
 
-        if (mInputMgr->KeyPressed(SDL_SCANCODE_D)) Kats(true);
-        if (mInputMgr->KeyPressed(SDL_SCANCODE_F)) Dons(true);
-        if (mInputMgr->KeyPressed(SDL_SCANCODE_J)) Dons(false);
-        if (mInputMgr->KeyPressed(SDL_SCANCODE_K)) Kats(false);
+        if (mInputMgr->KeyPressed(SDL_SCANCODE_D))
+        {
+            Kats(true);
+            if (!OnScreen.empty()) {
+                Int64 Time = static_cast<Int64>(SDL_GetTicks()) - mStartTime;
+                Time = Time - OnScreen.front().GetTime();
+                mScore->Update(
+                    Time, KATS, OnScreen.front().GetType(), false
+                );
+                mAudioMgr->PlaySFX("Res\\drum-hitnormal.wav", -1);
+            }
+        }
+        if (mInputMgr->KeyPressed(SDL_SCANCODE_F))
+        {
+            Dons(true);
+            if (!OnScreen.empty()) {
+                Int64 Time = static_cast<Int64>(SDL_GetTicks()) - mStartTime;
+                Time = Time - OnScreen.front().GetTime();
+                mScore->Update(
+                    Time, DONS, OnScreen.front().GetType(), false
+                );
+                mAudioMgr->PlaySFX("Res\\drum-hitnormal.wav", -1);
+            }
+        }
+        if (mInputMgr->KeyPressed(SDL_SCANCODE_J))
+        {
+            Dons(false);
+            if (!OnScreen.empty()) {
+                Int64 Time = static_cast<Int64>(SDL_GetTicks()) - mStartTime;
+                Time = Time - OnScreen.front().GetTime();
+                mScore->Update(
+                    Time, DONS, OnScreen.front().GetType(), false
+                );
+                mAudioMgr->PlaySFX("Res\\drum-hitnormal.wav", -1);
+            }
+        }
+        if (mInputMgr->KeyPressed(SDL_SCANCODE_K))
+        {
+            Kats(false);
+            if (!OnScreen.empty()) {
+                Int64 Time = static_cast<Int64>(SDL_GetTicks()) - mStartTime;
+                Time = Time - OnScreen.front().GetTime();
+                mScore->Update(
+                    Time, KATS, OnScreen.front().GetType(), false
+                );
+                mAudioMgr->PlaySFX("Res\\drum-hitnormal.wav", -1);
+            }
+        }
 
         if (mInputMgr->KeyPressed(SDL_SCANCODE_ESCAPE))
         {
@@ -209,9 +276,12 @@ bool PlayField::Open()
             switch (CHOICE)
             {
                 case CONTINUE:
+                    LastMenuOpened = true;
                     break;
 
                 case RETRY:
+                    RetryOffset = SDL_GetTicks() - frameStart;
+                    Mix_HaltMusic();
                     return true;
                     break;
 
@@ -222,6 +292,7 @@ bool PlayField::Open()
                 default:
                     break;
             }
+            Offset = SDL_GetTicks() - frameStart;
             Mix_ResumeMusic();
         }
 
