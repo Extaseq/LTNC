@@ -51,6 +51,7 @@
 		<Unit filename="GameManager.h" />
 		<Unit filename="Graphics.cpp" />
 		<Unit filename="Graphics.h" />
+		<Unit filename="HitCircle.h" />
 		<Unit filename="InputManager.cpp" />
 		<Unit filename="InputManager.h" />
 		<Unit filename="Menu.h" />
@@ -58,6 +59,7 @@
 		<Unit filename="MyVector.h" />
 		<Unit filename="PlayField.cpp" />
 		<Unit filename="PlayField.h" />
+		<Unit filename="ScoreSystem.h" />
 		<Unit filename="SelectionMode.cpp" />
 		<Unit filename="SelectionMode.h" />
 		<Unit filename="Sprite.cpp" />

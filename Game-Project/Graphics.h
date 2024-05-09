@@ -44,7 +44,7 @@ public:
 
     void ClearBackbuffer();
 
-    void DrawTexture(SDL_Texture* tex, SDL_FRect *dstRec, SDL_Rect *srcRect = NULL, double angle = 0);
+    void DrawTexture(SDL_Texture* tex, const SDL_FRect *dstRec, SDL_Rect *srcRect = NULL, double angle = 0);
 
     void DrawText(SDL_Texture* text, int x, int y);
 

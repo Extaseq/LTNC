@@ -42,11 +42,6 @@ public:
         return "NULL";
     }
 
-    std::string HandleEvent()
-    {
-        
-    }
-
     void Update()
     {
         for (Button* button : mButtons) button->Update();

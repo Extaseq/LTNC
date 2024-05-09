@@ -29,6 +29,8 @@ struct TimingPoint
 
     int effects;
 
+    double SliderVelocityMultiplier = 1.0;
+
     void printTimingPoint()
     {
         std::cout << time << "," << beatLength << "," << meter << "," << sampleSet << "," << sampleIndex << "," << volume << "," << (uninherited ? "true" : "false") << "," << effects << "\n";
@@ -37,7 +39,7 @@ struct TimingPoint
 
 struct HitObject
 {
-    class TypeBitFlags
+    struct TypeBitFlags
     {
         int HitCircle = 0;
 
@@ -54,7 +56,7 @@ struct HitObject
        int Hold = 7;
     };
 
-    class HitSoundBitFlags
+    struct HitSoundBitFlags
     {
         int Normal = 0;
 

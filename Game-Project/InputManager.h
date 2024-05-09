@@ -10,6 +10,10 @@ private:
 
     static InputManager* sInstance;
 
+    Uint8* mPrevKeyboardtates;
+    const Uint8* mKeyboardStates;
+    int mKeyLength;
+
 public:
 
     static InputManager* Instance();
@@ -17,6 +21,8 @@ public:
     static void Release();
 
     bool KeyDown(SDL_Scancode scanCode);
+    bool KeyPressed(SDL_Scancode scanCode);
+    bool KeyReleased(SDL_Scancode scanCode);
 
     void Update();
 

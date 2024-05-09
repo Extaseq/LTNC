@@ -90,7 +90,7 @@ public:
 
         Info.push_back(Text(beatmap.beatmapDifficulty[diffIndex].difficultName, 2500, y + 220, 40));
 
-        miniMap = {2162, y + 28, 320, 246};
+        miniMap = {2162.0, static_cast<float>(y + 28), 320.0, 246.0};
     }
 
     void Zoom()

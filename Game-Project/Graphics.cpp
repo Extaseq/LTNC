@@ -149,7 +149,7 @@ void Graphics::ClearBackbuffer()
     SDL_RenderClear(mRenderer);
 }
 
-void Graphics::DrawTexture(SDL_Texture* tex, SDL_FRect *dstRect, SDL_Rect *srcRect, double angle)
+void Graphics::DrawTexture(SDL_Texture* tex, const SDL_FRect *dstRect, SDL_Rect *srcRect, double angle)
 {
     SDL_RenderCopyExF(mRenderer, tex, srcRect, dstRect, angle, NULL, SDL_FLIP_NONE);
 }

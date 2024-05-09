@@ -85,7 +85,7 @@ void SelectionMode::Update(int beatmapIndex, int diffIndex_)
         section->Update();
     }
 
-    for (size_t index = 0; index < menu_button.size(); ++index)
+    for (int index = 0; index < (int)menu_button.size(); ++index)
     {
         if (index == diffIndex)
         {
@@ -136,7 +136,7 @@ void SelectionMode::Update(int beatmapIndex, int diffIndex_)
 
     double gap = 1505 / nDiff;
 
-    for (int i = 0, y; i < nDiff; ++i)
+    for (int i = 0; i < nDiff; ++i)
     {
         menu_button.push_back(new Menu_Button(2140, 350 + i * gap + gap / 2 - 301 / 2, currentBeatmap.beatmapMetadata.BackgroundFile, i, currentBeatmap));
     }

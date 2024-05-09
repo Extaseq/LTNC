@@ -1,10 +1,13 @@
 #include "PlayField.h"
 
-PlayField::PlayField(const Beatmap& beatmap, int diffIndex)
+PlayField::PlayField(const Beatmap& beatmap, int DiffIndex)
 {
     mAssetMgr = AssetManager::Instance();
     mGraphics = Graphics::Instance();
     mAudioMgr = AudioManager::Instance();
+    mInputMgr = InputManager::Instance();
+
+    LoadBeatmap(beatmap, DiffIndex);
 
     playSections.push_back(new Button("taiko-bar-left", 0, 610, 510, 492 + 50));
 
@@ -33,9 +36,45 @@ PlayField::PlayField(const Beatmap& beatmap, int diffIndex)
 
     taikoslider.texture = mAssetMgr->GetTexture("Res\\taiko-Slider@2x.png");
 
+    while (Open() == true) {}
+}
+
+void PlayField::LoadBeatmap(const Beatmap& beatmap, int DiffIndex)
+{
+    // Use later
+    int TimingPointIndex = 1;
+
     audioFile = beatmap.beatmapMetadata.AudioFileDir;
 
-    while (Open() == true) {}
+    double BaseSliderVelocity = beatmap.beatmapDifficulty[DiffIndex].SliderMultiplier;
+    BaseSliderVelocity = BaseSliderVelocity * 100.0 * beatmap.beatmapInfo.BPM / 60.0;
+
+    double SliderVelocity = BaseSliderVelocity * SPEED_RATIO; // Pixels per second
+
+
+    const std::vector<HitObject>& HitObjects = beatmap.beatmapDifficulty[DiffIndex].hitObjects;
+    const std::vector<TimingPoint>& TimingPoints = beatmap.beatmapDifficulty[DiffIndex].timingPoints;
+
+    size_t TotalHitObjects = HitObjects.size();
+
+    for (size_t index = 0; index < TotalHitObjects; ++index)
+    {
+        if (HitObjects[index].time == TimingPoints[TimingPointIndex].time) TimingPointIndex++;
+
+        double appearTime = static_cast<double>(HitObjects[index].time);
+
+        double Multiplier = 1.0;
+
+        if (TimingPoints[TimingPointIndex - 1].uninherited == false) {
+                Multiplier = (static_cast<double>(-100) / TimingPoints[TimingPointIndex - 1].beatLength);
+        }
+
+        appearTime = appearTime - ((PIXEL_TO_MOVE / (SliderVelocity * Multiplier)) * 1000); /*In miliseconds*/
+
+        Waiting.push(HitCircle(
+            HitObjects[index].type, HitObjects[index].hitSound, appearTime + 250, SliderVelocity * Multiplier
+        ));
+    }
 }
 
 int GetButtonOpening(const std::string& button_name)
@@ -45,9 +84,11 @@ int GetButtonOpening(const std::string& button_name)
     if (button_name == "pause-retry") return RETRY;
 
     if (button_name == "pause-back") return BACK;
+
+    return -1;
 }
 
-void PlayField::Kats(bool left)
+void PlayField::Dons(bool left)
 {
     SDL_FRect dstRect = {0, 608, 254, 546};
     std::string path = "Res\\taiko-drum-inner-right@2x.png";
@@ -60,7 +101,7 @@ void PlayField::Kats(bool left)
     mGraphics->DrawTexture(mAssetMgr->GetTexture(path), &dstRect, NULL, 180);
 }
 
-void PlayField::Dons(bool right)
+void PlayField::Kats(bool right)
 {
     SDL_FRect dstRect = {0, 608, 254, 546};
     std::string path = "Res\\taiko-drum-outer-right@2x.png";
@@ -73,9 +114,21 @@ void PlayField::Dons(bool right)
     mGraphics->DrawTexture(mAssetMgr->GetTexture(path), &dstRect, NULL, 180);
 }
 
-void PlayField::Update()
+void PlayField::Update(int deltaTime)
 {
     taikoslider.scroll(1);
+
+    if (OnScreen.empty()) return;
+
+    for (HitCircle& circle : OnScreen)
+    {
+        circle.Update(deltaTime);
+    }
+
+    while (!OnScreen.empty() && OnScreen.front().Disabled())
+    {
+        OnScreen.pop_front();
+    }
 }
 
 void PlayField::Render()
@@ -85,97 +138,101 @@ void PlayField::Render()
     mGraphics->DrawText(taikoslider.texture, taikoslider.scrollingOffset - 3840, 0);
 
     for (Button* section : playSections) section->Draw();
-}
 
-void PlayField::HandleKeyboard()
-{
-
+    for (const HitCircle& circle : OnScreen)
+    {
+        circle.Render();
+    }
 }
 
 bool PlayField::Open()
 {
     int HP = 100;
 
-    mAudioMgr->PlayMusic(audioFile, 0);
+    bool Playing = true;
 
     const int frameDelay = 1000 / FPS;
 
-    Uint32 frameStart;
+    Int64 frameStart;
     int frameTime;
 
-    while (Mix_PlayingMusic() == 1)
+    int Offset = Waiting.top().GetAppearTime();
+    Int64 previousTime = SDL_GetTicks();
+    Int64 mStartTime = previousTime;
+
+    if (Offset < 0) mStartTime -= Offset;
+
+    int deltaTime = 0;
+
+    while (Playing)
     {
         frameStart = SDL_GetTicks();
 
-        /*- Update -*/
-        Update();
+        deltaTime = frameStart - previousTime;
 
-
-        mGraphics->ClearBackbuffer();
-
-        /*- Render -*/
-        Render();
-
-        /**/
-
-        SDL_PumpEvents();
-
-        while (SDL_PollEvent(&mEvent))
+        if (!Waiting.empty())
         {
-            if (mEvent.type == SDL_KEYDOWN && mEvent.key.repeat == 0)
+            if (frameStart - mStartTime >= Waiting.top().GetAppearTime())
             {
-                if (mEvent.key.keysym.sym == SDLK_d)
-                {
-                    Dons(true);
-                }
-                if (mEvent.key.keysym.sym == SDLK_f)
-                {
-                    Kats(true);
-                }
-                if (mEvent.key.keysym.sym == SDLK_j)
-                {
-                    Kats(false);
-                }
-                if (mEvent.key.keysym.sym == SDLK_k)
-                {
-                    Dons(false);
-                }
-                if (mEvent.key.keysym.sym == SDLK_ESCAPE)
-                {
-                    Mix_PauseMusic();
-                    int CHOICE = OpenMenu(PauseMenu);
-                    switch (CHOICE)
-                    {
-                    case CONTINUE:
-                        break;
+                OnScreen.push_back(Waiting.top());
+                Waiting.pop();
+            }
+        }
+        previousTime = frameStart;
 
-                    case RETRY:
-                        return true;
-                        break;
+        Update(deltaTime);
 
-                    case BACK:
-                        Mix_HaltMusic();
-                        return false;
-
-                    default:
-                        break;
-                    }
-                    Mix_ResumeMusic();
-                }
+        if (frameStart - mStartTime >= 0)
+        {
+            if (Mix_PlayingMusic() != 1)
+            {
+                mAudioMgr->PlayMusic(audioFile);
             }
         }
 
-        /**/
+        if (Waiting.empty()) if (Mix_PlayingMusic() != -1) Playing = false;
+
+        mGraphics->ClearBackbuffer();
+        Render();
+
+        while (SDL_PollEvent(&mEvent)) {}
+
+        if (mInputMgr->KeyPressed(SDL_SCANCODE_D)) Kats(true);
+        if (mInputMgr->KeyPressed(SDL_SCANCODE_F)) Dons(true);
+        if (mInputMgr->KeyPressed(SDL_SCANCODE_J)) Dons(false);
+        if (mInputMgr->KeyPressed(SDL_SCANCODE_K)) Kats(false);
+
+        if (mInputMgr->KeyPressed(SDL_SCANCODE_ESCAPE))
+        {
+            Mix_PauseMusic();
+            int CHOICE = OpenMenu(PauseMenu);
+            switch (CHOICE)
+            {
+                case CONTINUE:
+                    break;
+
+                case RETRY:
+                    return true;
+                    break;
+
+                case BACK:
+                    Mix_HaltMusic();
+                    return false;
+
+                default:
+                    break;
+            }
+            Mix_ResumeMusic();
+        }
+
         mGraphics->Render();
 
+        mInputMgr->Update();
+
         frameTime = SDL_GetTicks() - frameStart;
-        if (frameDelay > frameTime)
-        {
-            SDL_Delay(frameDelay - frameTime);
-        }
+        if (frameDelay > frameTime) SDL_Delay(frameDelay - frameTime);
     }
 
-    Mix_HaltMusic();
     return false;
 }
 

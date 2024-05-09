@@ -6,9 +6,15 @@
 #include "Beatmap/Beatmap.h"
 #include "Cursor.h"
 #include "Menu.h"
+#include "HitCircle.h"
+#include "InputManager.h"
 
 #include <deque>
+#include <queue>
 #include <vector>
+#include <unordered_map>
+
+using Int64 = int64_t;
 
 #define CONTINUE 1
 #define RETRY 2
@@ -36,23 +42,36 @@ private:
 
     std::vector<Button*> playSections;
 
+    std::priority_queue<HitCircle, std::vector<HitCircle>, HitCircleComparator> Waiting;
+
+    std::deque<HitCircle> OnScreen;
+
+    const Uint8* mKeyboardState = SDL_GetKeyboardState(NULL);
+
+    std::unordered_map<SDL_Scancode, bool> key_down;
+
     Menu* PauseMenu, * FailMenu;
 
     SDL_Event mEvent;
 
     std::string audioFile;
 
+    std::vector<HitObject> mHitObjects;
+
     AssetManager* mAssetMgr;
     Graphics* mGraphics;
     AudioManager* mAudioMgr;
+    InputManager* mInputMgr;
 
     ScrollingBackground taikoslider;
 
 public:
 
-    PlayField(const Beatmap& beatmap, int diffIndex);
+    PlayField(const Beatmap& beatmap, int DiffIndex);
 
     bool Open();
+
+    void LoadBeatmap(const Beatmap& beatmap, int DiffIndex);
 
     void Kats(bool left);
 
@@ -60,9 +79,7 @@ public:
 
     int OpenMenu(Menu* menu);
 
-    void Update();
-
-    void HandleKeyboard();
+    void Update(int deltaTime);
 
     void Render();
 };
