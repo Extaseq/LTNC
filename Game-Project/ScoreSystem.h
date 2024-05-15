@@ -3,11 +3,19 @@
 
 #include <algorithm>
 #include <iostream>
+#include <string>
+#include <iomanip>
+#include <sstream>
+
+#include "HitCircle.h"
+#include "AssetManager.h"
+#include "Graphics.h"
 
 #define GREAT 300
 #define OK 150
 #define MISS 0
-#define SCORE_MULTIPLIER 64
+#define NONE -1
+#define SCORE_MULTIPLIER 80
 
 class ScoreSystem
 {
@@ -19,11 +27,15 @@ private:
 
     int currentCombo = 0;
 
-    double Great = 0;
+    double GreatTime = 0;
 
-    double Ok = 0;
+    double OkTime = 0;
 
-    double Miss = 0;
+    double MissTime = 0;
+
+    double Accuracy = 100.0;
+
+    int Great, Ok, Miss;
 
 public:
 
@@ -35,7 +47,13 @@ public:
 
     void SetOD(double OD);
 
-    bool Update(double Time, int ClickType, int CircleType, bool KiaiTime = false);
+    void SetMiss();
+
+    void UpdateAccuracy();
+
+    int AddScore(double Time, int ClickType, HitCircle &hitCircle, bool KiaiTime = false);
+
+    std::string _to_string(double acc);
 
     void Render();
 

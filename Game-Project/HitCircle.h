@@ -25,11 +25,13 @@ private:
 
     double AppearTime = -1.0;
 
-    int Time = 0;
+    double Time = 0;
 
     bool BigSize = false;
 
     bool Disable = false;
+
+    bool Clicked = false;
 
     int Type = DONS;
 
@@ -37,8 +39,7 @@ public:
 
     HitCircle() = default;
 
-    HitCircle(int Hitsound, double appearTime, int Time_, double velocity_)
-        : Velocity(velocity_ / 1000), AppearTime(appearTime), Time(Time_)
+    HitCircle(int Hitsound, double Time_, double velocity_) : Velocity(velocity_), Time(Time_)
     {
         if (Hitsound & (1 << 0)) dir = "Res/red-";
 
@@ -59,34 +60,32 @@ public:
             dir += "bigcircle.png";
             BigSize = true;
             Pos = {3840, 673, 376, 376};
+            AppearTime = Time_ - 3238.0 / velocity_ * 1000 + 15;
         }
         else
         {
             if (dir == "") dir = "Res/red-";
             else Type = KATS;
             dir += "hitcircle.png";
+            AppearTime = Time_ - 3300 / velocity_ * 1000 + 15;
         }
+
+        this->Velocity /= 1000;
     }
 
-    int GetType() const
-    {
-        return Type;
-    }
+    void SetClicked() { this->Clicked = true;}
 
-    int GetTime() const
-    {
-        return Time;
-    }
+    bool GetClicked() { return this->Clicked; }
 
-    bool Disabled() const
-    {
-        return Disable;
-    }
+    int GetType() const { return Type; }
 
-    double GetAppearTime() const
-    {
-        return AppearTime;
-    }
+    int GetTime() const { return Time; }
+
+    bool Disabled() const { return Disable; }
+
+    void SetDisabled() { this->Disable = true; }
+
+    double GetAppearTime() const { return AppearTime; }
 
     void Update(int deltaTime)
     {
@@ -98,15 +97,9 @@ public:
 
     void Render() const
     {
-        if (BigSize) if (Pos.x <= 540) {
-            AudioManager::Instance()->PlaySFX("Res\\drum-hitnormal.wav", -1);
-            return;
-        }
+        if (BigSize) if (Pos.x <= 540) return;
 
-        if (!BigSize) if (Pos.x <= 620) {
-            AudioManager::Instance()->PlaySFX("Res\\drum-hitnormal.wav", -1);
-            return;
-        }
+        if (!BigSize) if (Pos.x <= 620) return;
 
         Graphics::Instance()->DrawTexture(
             AssetManager::Instance()->GetTexture(dir), &Pos, NULL

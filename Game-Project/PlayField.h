@@ -39,19 +39,13 @@ class PlayField
 {
 private:
 
-    const int FPS = 120 * 4;
-
     std::vector<Button*> playSections;
 
     std::priority_queue<HitCircle, std::vector<HitCircle>, HitCircleComparator> Waiting;
 
     std::deque<HitCircle> OnScreen;
 
-    const Uint8* mKeyboardState = SDL_GetKeyboardState(NULL);
-
-    std::unordered_map<SDL_Scancode, bool> key_down;
-
-    Menu* PauseMenu, * FailMenu;
+    Menu* PauseMenu,* FailMenu,* ScorePanel;
 
     SDL_Event mEvent;
 
@@ -69,6 +63,10 @@ private:
 
     Int64 RetryOffset = 0;
 
+    double TotalHP, HP;
+
+    bool Playing = false;
+
     ScrollingBackground taikoslider;
 
 public:
@@ -79,9 +77,10 @@ public:
 
     void LoadBeatmap(const Beatmap& beatmap, int DiffIndex);
 
-    void Kats(bool left);
+    void Kats(bool left, Int64 Time);
+    void Dons(bool right, Int64 Time);
 
-    void Dons(bool right);
+    void PlayButton(Int64 Time, int Type);
 
     int OpenMenu(Menu* menu);
 

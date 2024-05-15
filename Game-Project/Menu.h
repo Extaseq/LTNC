@@ -18,7 +18,7 @@ private:
 
 public:
 
-    Menu(const std::string& name) : bg_name("Res\\" + name + "@2x.png")
+    Menu(const std::string& name) : bg_name(name)
     {
         mAssetMgr = AssetManager::Instance();
 

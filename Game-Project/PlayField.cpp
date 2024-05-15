@@ -8,47 +8,53 @@ PlayField::PlayField(const Beatmap& beatmap, int DiffIndex)
     mInputMgr = InputManager::Instance();
     mScore = ScoreSystem::Instance();
 
+    Mix_AllocateChannels(100);
+
     LoadBeatmap(beatmap, DiffIndex);
 
     playSections.push_back(new Button("taiko-bar-left", 0, 610, 510, 492 + 50));
-
     playSections.push_back(new Button("taiko-bar-right", 510, 616, 3840 - 510, 476 + 50));
-
     playSections.push_back(new Button("taikohitcircle", 605, 768 - 30, 236, 236));
-
     playSections.push_back(new Button("taikohitcircleoverlay", 575, 739 - 30, 296, 296));
-
     playSections.push_back(new Button("scorebar-bg", 0, 0, 3840, 2160));
-
     playSections.push_back(new Button("scorebar-colour", 14, 44, 1363, 157));
 
     // Pause menu
-    PauseMenu = new Menu("pause-overlay");
-
-    PauseMenu->AddButton(new Button("pause-overlay", 0, 0, 3840, 2160));
-
+    PauseMenu = new Menu("Res/pause-overlay@2x.png");
     PauseMenu->AddButton(new Button("pause-continue", 360, 285, 3109, 686, true, 2));
-
     PauseMenu->AddButton(new Button("pause-retry", 1342, 968, 1145, 317, true, 2));
-
     PauseMenu->AddButton(new Button("pause-back", 390, 1343, 3052, 556, true, 2));
 
     // background = mAssetMgr->GetTexture(beatmap.beatmapMetadata.BackgroundFile);
 
+    // Fail menu
+    FailMenu = new Menu("Res/fail-background@2x.png");
+    FailMenu->AddButton(new Button("pause-retry", 1342, 968, 1145, 317, true, 2));
+    FailMenu->AddButton(new Button("pause-back", 390, 1343, 3052, 556, true, 2));
+
+    // Score panel
+    ScorePanel = new Menu(beatmap.beatmapMetadata.BackgroundFile);
+    ScorePanel->AddButton(new Button("ranking-panel", 0, 291, 3840, 3863, false));
+    ScorePanel->AddButton(new Button("menu-back", 0, 1896, 596, 264, true, HOVER_TYPE_GLOW));
+
+
     taikoslider.texture = mAssetMgr->GetTexture("Res\\taiko-Slider@2x.png");
 
     auto SavePoint = Waiting;
-
     while (Open() == true)
     {
         Waiting = SavePoint;
         OnScreen.clear();
     }
+
+    OpenMenu(ScorePanel);
 }
 
 void PlayField::LoadBeatmap(const Beatmap& beatmap, int DiffIndex)
 {
     int TimingPointIndex = 1;
+
+    HP = beatmap.beatmapDifficulty[DiffIndex].DrainRate;
 
     mScore->SetOD(beatmap.beatmapDifficulty[DiffIndex].OverallDifficulty);
 
@@ -58,7 +64,6 @@ void PlayField::LoadBeatmap(const Beatmap& beatmap, int DiffIndex)
     BaseSliderVelocity = BaseSliderVelocity * 100.0 * beatmap.beatmapInfo.BPM / 60.0;
 
     double SliderVelocity = BaseSliderVelocity * SPEED_RATIO; // Pixels per second
-
 
     const std::vector<HitObject>& HitObjects = beatmap.beatmapDifficulty[DiffIndex].hitObjects;
     const std::vector<TimingPoint>& TimingPoints = beatmap.beatmapDifficulty[DiffIndex].timingPoints;
@@ -71,18 +76,14 @@ void PlayField::LoadBeatmap(const Beatmap& beatmap, int DiffIndex)
 
         if (TimingPointIndex > (int)TimingPoints.size()) TimingPointIndex = (int)TimingPoints.size();
 
-        double appearTime = static_cast<double>(HitObjects[index].time);
-
         double Multiplier = 1.0;
 
         if (TimingPoints[TimingPointIndex - 1].uninherited == false) {
                 Multiplier = (static_cast<double>(-100) / TimingPoints[TimingPointIndex - 1].beatLength);
         }
 
-        appearTime = appearTime - ((PIXEL_TO_MOVE / (SliderVelocity * Multiplier)) * 1000); /*In miliseconds*/
-
         Waiting.push(HitCircle(
-            HitObjects[index].hitSound, appearTime, HitObjects[index].time, SliderVelocity * Multiplier
+            HitObjects[index].hitSound, HitObjects[index].time, SliderVelocity * Multiplier
         ));
     }
 }
@@ -98,7 +99,7 @@ int GetButtonOpening(const std::string& button_name)
     return -1;
 }
 
-void PlayField::Dons(bool left)
+void PlayField::Dons(bool left, Int64 Time)
 {
     SDL_FRect dstRect = {0, 608, 254, 546};
     std::string path = "Res\\taiko-drum-inner-right@2x.png";
@@ -108,10 +109,12 @@ void PlayField::Dons(bool left)
         path = "Res\\taiko-drum-inner-left@2x.png";
     }
 
+    PlayButton(Time, DONS);
+
     mGraphics->DrawTexture(mAssetMgr->GetTexture(path), &dstRect, NULL, 180);
 }
 
-void PlayField::Kats(bool right)
+void PlayField::Kats(bool right, Int64 Time)
 {
     SDL_FRect dstRect = {0, 608, 254, 546};
     std::string path = "Res\\taiko-drum-outer-right@2x.png";
@@ -121,7 +124,38 @@ void PlayField::Kats(bool right)
         path = "Res\\taiko-drum-outer-left@2x.png";
     }
 
+    PlayButton(Time, KATS);
+
     mGraphics->DrawTexture(mAssetMgr->GetTexture(path), &dstRect, NULL, 180);
+}
+
+void PlayField::PlayButton(Int64 Time, int Type)
+{
+    if (OnScreen.empty()) return;
+
+    Time = Time - OnScreen.front().GetTime();
+    int Score = mScore->AddScore(Time, Type, OnScreen.front(), false);
+    SDL_FRect dst = {540, 706, 376, 376};
+    switch (Score)
+    {
+        case GREAT:
+            mGraphics->DrawTexture(mAssetMgr->GetTexture("Res/taiko-hit300@2x.png"), &dst, NULL);
+            TotalHP += HP;
+            break;
+
+        case OK:
+            mGraphics->DrawTexture(mAssetMgr->GetTexture("Res/taiko-hit100@2x.png"), &dst, NULL);
+            TotalHP += (0.5 * HP);
+            break;
+
+        case MISS:
+            mGraphics->DrawTexture(mAssetMgr->GetTexture("Res/taiko-hit0@2x.png"), &dst, NULL);
+            TotalHP -= HP;
+            break;
+
+        default:
+            break;
+    }
 }
 
 void PlayField::Update(int deltaTime)
@@ -130,15 +164,7 @@ void PlayField::Update(int deltaTime)
 
     if (OnScreen.empty()) return;
 
-    for (HitCircle& circle : OnScreen)
-    {
-        circle.Update(deltaTime);
-    }
-
-    while (!OnScreen.empty() && OnScreen.front().Disabled())
-    {
-        OnScreen.pop_front();
-    }
+    for (HitCircle& circle : OnScreen) circle.Update(deltaTime);
 }
 
 void PlayField::Render()
@@ -153,19 +179,33 @@ void PlayField::Render()
     {
         circle.Render();
     }
+
+    if (!OnScreen.empty() && OnScreen.front().Disabled())
+    {
+        if (!OnScreen.front().GetClicked())
+        {
+            SDL_FRect dst = {540, 706, 376, 376};
+            mGraphics->DrawTexture(mAssetMgr->GetTexture("Res/taiko-hit0@2x.png"), &dst, NULL);
+            TotalHP -= HP;
+            mScore->SetMiss();
+        }
+    }
+
+    while (!OnScreen.empty() && OnScreen.front().Disabled())
+    {
+        OnScreen.pop_front();
+    }
+
+    if (Waiting.empty()) Playing = false;
 }
 
 bool PlayField::Open()
 {
-    int HP = 100;
+    TotalHP = 100.0;
 
-    bool Playing = true;
-
-    const int frameDelay = 1000 / FPS;
+    Playing = true;
 
     Int64 frameStart;
-    int frameTime;
-
     int Offset = Waiting.top().GetAppearTime();
     Int64 previousTime = SDL_GetTicks();
     Int64 mStartTime = previousTime;
@@ -213,8 +253,6 @@ bool PlayField::Open()
             }
         }
 
-        if (Waiting.empty()) if (Mix_PlayingMusic() != 1) Playing = false;
-
         mGraphics->ClearBackbuffer();
         Render();
 
@@ -222,51 +260,19 @@ bool PlayField::Open()
 
         if (mInputMgr->KeyPressed(SDL_SCANCODE_D))
         {
-            Kats(true);
-            if (!OnScreen.empty()) {
-                Int64 Time = static_cast<Int64>(SDL_GetTicks()) - mStartTime;
-                Time = Time - OnScreen.front().GetTime();
-                mScore->Update(
-                    Time, KATS, OnScreen.front().GetType(), false
-                );
-                mAudioMgr->PlaySFX("Res\\drum-hitnormal.wav", -1);
-            }
+            Kats(true, SDL_GetTicks() - mStartTime);
         }
         if (mInputMgr->KeyPressed(SDL_SCANCODE_F))
         {
-            Dons(true);
-            if (!OnScreen.empty()) {
-                Int64 Time = static_cast<Int64>(SDL_GetTicks()) - mStartTime;
-                Time = Time - OnScreen.front().GetTime();
-                mScore->Update(
-                    Time, DONS, OnScreen.front().GetType(), false
-                );
-                mAudioMgr->PlaySFX("Res\\drum-hitnormal.wav", -1);
-            }
+            Dons(true, SDL_GetTicks() - mStartTime);
         }
         if (mInputMgr->KeyPressed(SDL_SCANCODE_J))
         {
-            Dons(false);
-            if (!OnScreen.empty()) {
-                Int64 Time = static_cast<Int64>(SDL_GetTicks()) - mStartTime;
-                Time = Time - OnScreen.front().GetTime();
-                mScore->Update(
-                    Time, DONS, OnScreen.front().GetType(), false
-                );
-                mAudioMgr->PlaySFX("Res\\drum-hitnormal.wav", -1);
-            }
+            Dons(false, SDL_GetTicks() - mStartTime);
         }
         if (mInputMgr->KeyPressed(SDL_SCANCODE_K))
         {
-            Kats(false);
-            if (!OnScreen.empty()) {
-                Int64 Time = static_cast<Int64>(SDL_GetTicks()) - mStartTime;
-                Time = Time - OnScreen.front().GetTime();
-                mScore->Update(
-                    Time, KATS, OnScreen.front().GetType(), false
-                );
-                mAudioMgr->PlaySFX("Res\\drum-hitnormal.wav", -1);
-            }
+            Kats(false, SDL_GetTicks() - mStartTime);
         }
 
         if (mInputMgr->KeyPressed(SDL_SCANCODE_ESCAPE))
@@ -296,12 +302,30 @@ bool PlayField::Open()
             Mix_ResumeMusic();
         }
 
+        // if (TotalHP <= 0)
+        // {
+        //     Mix_HaltMusic();
+        //     int CHOICE = OpenMenu(FailMenu);
+        //     switch (CHOICE)
+        //     {
+        //         case RETRY:
+        //             RetryOffset = SDL_GetTicks() - frameStart;
+        //             return true;
+        //             break;
+
+        //         case BACK:
+        //             return false;
+        //     }
+        // }
+
+        mScore->Render();
+
         mGraphics->Render();
 
         mInputMgr->Update();
 
-        frameTime = SDL_GetTicks() - frameStart;
-        if (frameDelay > frameTime) SDL_Delay(frameDelay - frameTime);
+        // frameTime = SDL_GetTicks() - frameStart;
+        // if (frameDelay > frameTime) SDL_Delay(frameDelay - frameTime);
     }
 
     return false;
@@ -309,7 +333,7 @@ bool PlayField::Open()
 
 int PlayField::OpenMenu(Menu* menu)
 {
-    const int frameDelay = 1000 / FPS;
+    const int frameDelay = 1000 / 60;
 
     Uint32 frameStart;
     int frameTime;
