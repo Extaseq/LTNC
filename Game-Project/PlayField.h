@@ -65,7 +65,7 @@ private:
 
     double TotalHP, HP;
 
-    bool Playing = false;
+    bool Playing = false, failed = false;
 
     ScrollingBackground taikoslider;
 

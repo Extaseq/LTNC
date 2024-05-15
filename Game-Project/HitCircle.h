@@ -60,14 +60,14 @@ public:
             dir += "bigcircle.png";
             BigSize = true;
             Pos = {3840, 673, 376, 376};
-            AppearTime = Time_ - 3238.0 / velocity_ * 1000 + 15;
+            AppearTime = Time_ - 3238.0 / velocity_ * 1000 + 14;
         }
         else
         {
             if (dir == "") dir = "Res/red-";
             else Type = KATS;
             dir += "hitcircle.png";
-            AppearTime = Time_ - 3300 / velocity_ * 1000 + 15;
+            AppearTime = Time_ - 3300 / velocity_ * 1000 + 14;
         }
 
         this->Velocity /= 1000;

@@ -38,21 +38,22 @@ int ScoreSystem::GetScore(double Time)
 
 void ScoreSystem::SetOD(double OD)
 {
-    GreatTime = 50 - 3 * OD;
+    GreatTime = 50 * 2 - 3 * OD;
 
     if (OD < 5)
     {
-        OkTime = 120 - 8 * OD;
-        MissTime = 135 - 8 * OD;
+        OkTime = 120 * 2 - 8 * OD;
+        MissTime = 135 * 2 - 8 * OD;
     }
     else
     {
-        OkTime = 110 - 6 * OD;
-        MissTime = 120 - 5 * OD;
+        OkTime = 110 * 2 - 6 * OD;
+        MissTime = 120 * 2 - 5 * OD;
     }
 
     currentCombo = currentScore = 0;
     Great = Ok = Miss = 0;
+    Accuracy = 100.0;
 }
 
 void ScoreSystem::UpdateAccuracy()
@@ -147,7 +148,7 @@ void ScoreSystem::Render()
         AssetManager::Instance()->GetTexture("Res/Assets/score/score-x@2x.png"), &pos, NULL
     );
 
-    pos = {3825, 110, 40, 60};
+    pos = {3800, 110, 40, 60};
     Graphics::Instance()->DrawTexture(
         AssetManager::Instance()->GetTexture("Res/Assets/score/score-percent@2x.png"), &pos, NULL
     );

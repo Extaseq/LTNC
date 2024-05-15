@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cmath>
 #include <iomanip>
+#include <iostream>
 
 class Parsing
 {

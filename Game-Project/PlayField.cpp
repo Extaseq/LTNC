@@ -1,5 +1,7 @@
 #include "PlayField.h"
 
+Int64 mStartTime;
+
 PlayField::PlayField(const Beatmap& beatmap, int DiffIndex)
 {
     mAssetMgr = AssetManager::Instance();
@@ -47,7 +49,7 @@ PlayField::PlayField(const Beatmap& beatmap, int DiffIndex)
         OnScreen.clear();
     }
 
-    OpenMenu(ScorePanel);
+    if (!failed) OpenMenu(ScorePanel);
 }
 
 void PlayField::LoadBeatmap(const Beatmap& beatmap, int DiffIndex)
@@ -188,6 +190,8 @@ void PlayField::Render()
             mGraphics->DrawTexture(mAssetMgr->GetTexture("Res/taiko-hit0@2x.png"), &dst, NULL);
             TotalHP -= HP;
             mScore->SetMiss();
+
+            std::cout << SDL_GetTicks() - mStartTime << "\n";
         }
     }
 
@@ -208,7 +212,7 @@ bool PlayField::Open()
     Int64 frameStart;
     int Offset = Waiting.top().GetAppearTime();
     Int64 previousTime = SDL_GetTicks();
-    Int64 mStartTime = previousTime;
+    mStartTime = previousTime;
 
     if (RetryOffset != 0)
     {
@@ -293,6 +297,7 @@ bool PlayField::Open()
 
                 case BACK:
                     Mix_HaltMusic();
+                    failed = true;
                     return false;
 
                 default:

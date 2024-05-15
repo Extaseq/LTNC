@@ -340,7 +340,6 @@ public:
                 TimingPoint(time, beatLength, meter, sampleSet, sampleIndex, volume, uninherited, effect)
             );
         }
-        std::cout << "\n";
     }
 
     /*
