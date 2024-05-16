@@ -9,6 +9,8 @@ PlayField::PlayField(const Beatmap& beatmap, int DiffIndex)
     mAudioMgr = AudioManager::Instance();
     mInputMgr = InputManager::Instance();
     mScore = ScoreSystem::Instance();
+    mTimer = Timer::Instance();
+    mHPBar = new HPBar();
 
     Mix_AllocateChannels(100);
 
@@ -19,7 +21,7 @@ PlayField::PlayField(const Beatmap& beatmap, int DiffIndex)
     playSections.push_back(new Button("taikohitcircle", 605, 768 - 30, 236, 236));
     playSections.push_back(new Button("taikohitcircleoverlay", 575, 739 - 30, 296, 296));
     playSections.push_back(new Button("scorebar-bg", 0, 0, 3840, 2160));
-    playSections.push_back(new Button("scorebar-colour", 14, 44, 1363, 157));
+    // playSections.push_back(new Button("scorebar-colour", 14, 44, 1363, 157));
 
     // Pause menu
     PauseMenu = new Menu("Res/pause-overlay@2x.png");
@@ -56,7 +58,7 @@ void PlayField::LoadBeatmap(const Beatmap& beatmap, int DiffIndex)
 {
     int TimingPointIndex = 1;
 
-    HP = beatmap.beatmapDifficulty[DiffIndex].DrainRate;
+    DrainRate = beatmap.beatmapDifficulty[DiffIndex].DrainRate;
 
     mScore->SetOD(beatmap.beatmapDifficulty[DiffIndex].OverallDifficulty);
 
@@ -137,22 +139,22 @@ void PlayField::PlayButton(Int64 Time, int Type)
 
     Time = Time - OnScreen.front().GetTime();
     int Score = mScore->AddScore(Time, Type, OnScreen.front(), false);
-    SDL_FRect dst = {540, 706, 376, 376};
+    SDL_FRect dst = {440, 606, 476, 476};
     switch (Score)
     {
         case GREAT:
             mGraphics->DrawTexture(mAssetMgr->GetTexture("Res/taiko-hit300@2x.png"), &dst, NULL);
-            TotalHP += HP;
+            CurrentHP += DrainRate;
             break;
 
         case OK:
             mGraphics->DrawTexture(mAssetMgr->GetTexture("Res/taiko-hit100@2x.png"), &dst, NULL);
-            TotalHP += (0.5 * HP);
+            CurrentHP += (0.5 * DrainRate);
             break;
 
         case MISS:
             mGraphics->DrawTexture(mAssetMgr->GetTexture("Res/taiko-hit0@2x.png"), &dst, NULL);
-            TotalHP -= HP;
+            CurrentHP -= DrainRate;
             break;
 
         default:
@@ -163,6 +165,8 @@ void PlayField::PlayButton(Int64 Time, int Type)
 void PlayField::Update(int deltaTime)
 {
     taikoslider.scroll(1);
+
+    mHPBar->Update(CurrentHP);
 
     if (OnScreen.empty()) return;
 
@@ -177,6 +181,8 @@ void PlayField::Render()
 
     for (Button* section : playSections) section->Draw();
 
+    mHPBar->Draw();
+
     for (const HitCircle& circle : OnScreen)
     {
         circle.Render();
@@ -186,12 +192,10 @@ void PlayField::Render()
     {
         if (!OnScreen.front().GetClicked())
         {
-            SDL_FRect dst = {540, 706, 376, 376};
+            SDL_FRect dst = {440, 606, 476, 476};
             mGraphics->DrawTexture(mAssetMgr->GetTexture("Res/taiko-hit0@2x.png"), &dst, NULL);
-            TotalHP -= HP;
+            CurrentHP -= DrainRate;
             mScore->SetMiss();
-
-            std::cout << SDL_GetTicks() - mStartTime << "\n";
         }
     }
 
@@ -205,13 +209,14 @@ void PlayField::Render()
 
 bool PlayField::Open()
 {
-    TotalHP = 100.0;
+    CurrentHP = MAX_HP;
 
     Playing = true;
 
+
     Int64 frameStart;
     int Offset = Waiting.top().GetAppearTime();
-    Int64 previousTime = SDL_GetTicks();
+    Int64 previousTime = mTimer->Now();
     mStartTime = previousTime;
 
     if (RetryOffset != 0)
@@ -225,9 +230,11 @@ bool PlayField::Open()
 
     int deltaTime = 0;
 
+    mScore->Reset();
+
     while (Playing)
     {
-        frameStart = SDL_GetTicks();
+        frameStart = mTimer->Now();
 
         deltaTime = frameStart - previousTime;
         if (LastMenuOpened)
@@ -264,19 +271,19 @@ bool PlayField::Open()
 
         if (mInputMgr->KeyPressed(SDL_SCANCODE_D))
         {
-            Kats(true, SDL_GetTicks() - mStartTime);
+            Kats(true, mTimer->Now() - mStartTime);
         }
         if (mInputMgr->KeyPressed(SDL_SCANCODE_F))
         {
-            Dons(true, SDL_GetTicks() - mStartTime);
+            Dons(true, mTimer->Now() - mStartTime);
         }
         if (mInputMgr->KeyPressed(SDL_SCANCODE_J))
         {
-            Dons(false, SDL_GetTicks() - mStartTime);
+            Dons(false, mTimer->Now() - mStartTime);
         }
         if (mInputMgr->KeyPressed(SDL_SCANCODE_K))
         {
-            Kats(false, SDL_GetTicks() - mStartTime);
+            Kats(false, mTimer->Now() - mStartTime);
         }
 
         if (mInputMgr->KeyPressed(SDL_SCANCODE_ESCAPE))
@@ -290,7 +297,7 @@ bool PlayField::Open()
                     break;
 
                 case RETRY:
-                    RetryOffset = SDL_GetTicks() - frameStart;
+                    RetryOffset = mTimer->Now() - frameStart;
                     Mix_HaltMusic();
                     return true;
                     break;
@@ -303,34 +310,32 @@ bool PlayField::Open()
                 default:
                     break;
             }
-            Offset = SDL_GetTicks() - frameStart;
+            Offset = mTimer->Now() - frameStart;
             Mix_ResumeMusic();
         }
 
-        // if (TotalHP <= 0)
-        // {
-        //     Mix_HaltMusic();
-        //     int CHOICE = OpenMenu(FailMenu);
-        //     switch (CHOICE)
-        //     {
-        //         case RETRY:
-        //             RetryOffset = SDL_GetTicks() - frameStart;
-        //             return true;
-        //             break;
+        if (CurrentHP <= 0)
+        {
+            Mix_HaltMusic();
+            int CHOICE = OpenMenu(FailMenu);
+            switch (CHOICE)
+            {
+                case RETRY:
+                    RetryOffset = mTimer->Now() - frameStart;
+                    return true;
+                    break;
 
-        //         case BACK:
-        //             return false;
-        //     }
-        // }
+                case BACK:
+                    failed = true;
+                    return false;
+            }
+        }
 
         mScore->Render();
 
         mGraphics->Render();
 
         mInputMgr->Update();
-
-        // frameTime = SDL_GetTicks() - frameStart;
-        // if (frameDelay > frameTime) SDL_Delay(frameDelay - frameTime);
     }
 
     return false;

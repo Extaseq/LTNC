@@ -32,7 +32,6 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="Animation.h" />
 		<Unit filename="AssetManager.cpp" />
 		<Unit filename="AssetManager.h" />
 		<Unit filename="AudioManager.cpp" />
@@ -59,6 +58,8 @@
 		<Unit filename="MyVector.h" />
 		<Unit filename="PlayField.cpp" />
 		<Unit filename="PlayField.h" />
+		<Unit filename="RankingPanel.cpp" />
+		<Unit filename="RankingPanel.h" />
 		<Unit filename="ScoreSystem.cpp" />
 		<Unit filename="ScoreSystem.h" />
 		<Unit filename="SelectionMode.cpp" />

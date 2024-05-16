@@ -26,12 +26,14 @@ private:
     SDL_Texture* clickToPlay;
 
     PlayField* newGame;
-
     Graphics* mGraphics;
-
     AudioManager* mAudioMgr;
-
+    AssetManager* mAssetMgr;
     SelectionMode* mainMenu;
+
+    int bmIndex = 0;
+    
+    int diffIndex = 0;
 
     int BeatmapListSize;
 

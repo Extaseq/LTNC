@@ -9,6 +9,7 @@
 #include "HitCircle.h"
 #include "InputManager.h"
 #include "ScoreSystem.h"
+#include "Timer.h"
 
 #include <deque>
 #include <queue>
@@ -21,6 +22,8 @@ using Int64 = int64_t;
 #define RETRY 2
 #define BACK 3
 
+#define MAX_HP 200.0
+
 struct ScrollingBackground
 {
     SDL_Texture* texture;
@@ -32,6 +35,37 @@ struct ScrollingBackground
         scrollingOffset -= distance;
 
         if (scrollingOffset < 0) scrollingOffset = 3840;
+    }
+};
+
+struct HPBar
+{
+    const std::string source = "Res/scorebar-colour@2x.png";
+
+    SDL_FRect dstRect = {14, 44, 1363, 157};
+    SDL_Rect srcRect = {0, 0, 968, 111};
+
+    const float DefaultDstX = 1363.0f;
+    const int DefaultSrcX = 968;
+
+    double hp = 0;
+
+    void Update(double NewHp)
+    {
+        hp = (NewHp > MAX_HP) ? MAX_HP : (NewHp < 0) ? 0 : NewHp;
+
+        dstRect.w = (hp * DefaultDstX) / MAX_HP;
+    }
+
+    void Draw()
+    {
+        if (hp <= 0) return;
+
+        srcRect.w = (hp * DefaultSrcX) / MAX_HP;
+
+        Graphics::Instance()->DrawTexture(
+            AssetManager::Instance()->GetTexture(source), &dstRect, &srcRect
+        );
     }
 };
 
@@ -60,10 +94,12 @@ private:
     AudioManager* mAudioMgr;
     InputManager* mInputMgr;
     ScoreSystem* mScore;
+    Timer* mTimer;
+    HPBar* mHPBar;
 
     Int64 RetryOffset = 0;
 
-    double TotalHP, HP;
+    double CurrentHP, DrainRate;
 
     bool Playing = false, failed = false;
 

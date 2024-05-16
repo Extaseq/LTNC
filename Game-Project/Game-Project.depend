@@ -106,7 +106,7 @@
 	<unordered_map>
 	<SDL_mixer.h>
 
-1715244944 e:\ltnc\game-project\graphics.h
+1715884059 e:\ltnc\game-project\graphics.h
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_ttf.h>
@@ -119,10 +119,10 @@
 1714819518 e:\ltnc\game-project\cursor.h
 	"AssetManager.h"
 
-1715249734 source:e:\ltnc\game-project\gamemanager.cpp
+1715886660 source:e:\ltnc\game-project\gamemanager.cpp
 	"GameManager.h"
 
-1715138728 e:\ltnc\game-project\gamemanager.h
+1715883985 e:\ltnc\game-project\gamemanager.h
 	"Graphics.h"
 	"Cursor.h"
 	"SelectionMode.h"
@@ -194,7 +194,7 @@
 	<string>
 	<vector>
 
-1715244948 source:e:\ltnc\game-project\graphics.cpp
+1715884100 source:e:\ltnc\game-project\graphics.cpp
 	"Graphics.h"
 
 1715295552 source:e:\ltnc\game-project\main.cpp
@@ -221,13 +221,13 @@
 1715102027 e:\ltnc\game-project\button.h
 	"AssetManager.h"
 
-1715500603 source:e:\ltnc\game-project\audiomanager.cpp
+1715848773 source:e:\ltnc\game-project\audiomanager.cpp
 	"AudioManager.h"
 
-1715500586 e:\ltnc\game-project\audiomanager.h
+1715848819 e:\ltnc\game-project\audiomanager.h
 	"AssetManager.h"
 
-1715752842 e:\ltnc\game-project\playfield.h
+1715891946 e:\ltnc\game-project\playfield.h
 	"AudioManager.h"
 	"Graphics.h"
 	"Beatmap/Beatmap.h"
@@ -236,12 +236,13 @@
 	"HitCircle.h"
 	"InputManager.h"
 	"ScoreSystem.h"
+	"Timer.h"
 	<deque>
 	<queue>
 	<vector>
 	<unordered_map>
 
-1715753783 source:e:\ltnc\game-project\playfield.cpp
+1715893049 source:e:\ltnc\game-project\playfield.cpp
 	"PlayField.h"
 
 1715606046 e:\ltnc\game-project\menu.h
@@ -255,24 +256,24 @@
 1715101425 source:e:\ltnc\game-project\button.cpp
 	"Button.h"
 
-1715265562 e:\ltnc\game-project\inputmanager.h
+1715850149 e:\ltnc\game-project\inputmanager.h
 	<SDL.h>
 	<unordered_map>
 
 1715267423 source:e:\ltnc\game-project\inputmanager.cpp
 	"InputManager.h"
 
-1715753906 e:\ltnc\game-project\hitcircle.h
+1715893122 e:\ltnc\game-project\hitcircle.h
 	"Graphics.h"
 	"AssetManager.h"
 	"AudioManager.h"
 	<string>
 	<vector>
 
-1715753633 source:e:\ltnc\game-project\scoresystem.cpp
+1715849424 source:e:\ltnc\game-project\scoresystem.cpp
 	"ScoreSystem.h"
 
-1715601407 e:\ltnc\game-project\scoresystem.h
+1715851498 e:\ltnc\game-project\scoresystem.h
 	<algorithm>
 	<iostream>
 	<string>
@@ -281,4 +282,20 @@
 	"HitCircle.h"
 	"AssetManager.h"
 	"Graphics.h"
+
+1715888740 source:e:\ltnc\game-project\rankingpanel.cpp
+	"RankingPanel.h"
+
+1715888563 e:\ltnc\game-project\rankingpanel.h
+	"Button.h"
+	"ScoreSystem.h"
+	"Graphics.h"
+	"AssetManager.h"
+
+1715892206 e:\ltnc\game-project\timer.h
+	<chrono>
+	<string>
+
+1715892191 source:e:\ltnc\game-project\timer.cpp
+	"Timer.h"
 

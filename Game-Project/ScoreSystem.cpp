@@ -51,9 +51,7 @@ void ScoreSystem::SetOD(double OD)
         MissTime = 120 * 2 - 5 * OD;
     }
 
-    currentCombo = currentScore = 0;
-    Great = Ok = Miss = 0;
-    Accuracy = 100.0;
+    Reset();
 }
 
 void ScoreSystem::UpdateAccuracy()
@@ -67,6 +65,13 @@ void ScoreSystem::SetMiss()
 {
     currentCombo = 0;
     Miss++;
+}
+
+void ScoreSystem::Reset()
+{
+    currentCombo = currentScore = 0;
+    Great = Ok = Miss = 0;
+    Accuracy = 100.0;
 }
 
 int ScoreSystem::AddScore(double Time, int ClickType, HitCircle &hitCircle, bool KiaiTime)

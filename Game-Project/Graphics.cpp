@@ -117,7 +117,6 @@ void Graphics::LoadFont(int size)
     {
         printf("Unable to Load Font: %s\n", TTF_GetError());
     }
-
 }
 
 SDL_Texture* Graphics::LoadText(const std::string& text, int size, bool dimmed)

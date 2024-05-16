@@ -51,6 +51,12 @@ public:
 
     void UpdateAccuracy();
 
+    void Reset();
+
+    int GetGreat() const { return Great; }
+    int GetOk() const { return Ok; }
+    int GetMiss() const { return Miss; }
+
     int AddScore(double Time, int ClickType, HitCircle &hitCircle, bool KiaiTime = false);
 
     std::string _to_string(double acc);

@@ -6,10 +6,6 @@ SDL_Event GameManager::mEvent;
 
 std::vector<Beatmap> GameManager::BeatmapList;
 
-int bmIndex = 0;
-
-int diffIndex = 0;
-
 GameManager* GameManager::Instance()
 {
     if (sInstance == nullptr)
@@ -31,14 +27,12 @@ GameManager::GameManager()
     std::srand(std::time(nullptr));
 
     mGraphics = Graphics::Instance();
+    mAssetMgr = AssetManager::Instance();
     mAudioMgr = AudioManager::Instance();
 
-    if (!Graphics::Initialized())
-    {
-        mQuit = true;
-    }
+    if (!Graphics::Initialized()) mQuit = true;
 
-    mainScreen = mGraphics->LoadTexture("Res\\menu-background.jpg");
+    mainScreen = mAssetMgr->GetTexture("Res\\menu-background.jpg");
 
     clickToPlay = mGraphics->LoadText("- PRESS ANY BUTTON -", 180);
 
@@ -52,6 +46,7 @@ GameManager::GameManager()
 GameManager::~GameManager()
 {
     AssetManager::Release();
+    mAssetMgr = nullptr;
 
     Graphics::Release();
     mGraphics = nullptr;
@@ -138,6 +133,7 @@ void GameManager::MainScreen()
                 FadeIn();
             }
         }
+
         mGraphics->ClearBackbuffer();
 
         mGraphics->DrawTexture(mainScreen, NULL, NULL);
@@ -300,9 +296,6 @@ void GameManager::SelectionMode()
         mGraphics->Render();
 
         frameTime = SDL_GetTicks() - frameStart;
-        if (frameDelay > frameTime)
-        {
-            SDL_Delay(frameDelay - frameTime);
-        }
+        if (frameDelay > frameTime) SDL_Delay(frameDelay - frameTime);
     }
 }

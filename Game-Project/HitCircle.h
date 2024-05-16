@@ -48,11 +48,13 @@ public:
             dir = "Res/blue-";
             Type = KATS;
         }
+
         if (Hitsound & (1 << 3))
         {
             dir = "Res/blue-";
             Type = KATS;
         }
+
         if (Hitsound & (1 << 2))
         {
             if (dir == "") dir = "Res/red-";
@@ -91,8 +93,8 @@ public:
     {
         Pos.x -= Velocity * deltaTime; // Delta time in miliseconds
         if (BigSize)
-            Disable = (Pos.x <= 540);
-        else Disable = (Pos.x <= 602);
+            Disable = (Pos.x <= 500);
+        else Disable = (Pos.x <= 540);
     }
 
     void Render() const

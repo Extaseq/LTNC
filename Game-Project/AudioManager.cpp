@@ -40,5 +40,6 @@ void AudioManager::PlayMusic(std::string filename, int loops)
 
 void AudioManager::PlaySFX(std::string filename, int channel)
 {
+    Mix_HaltChannel(channel);
     Mix_PlayChannel(channel, mAssetMgr->GetSFX(filename), 0);
 }
