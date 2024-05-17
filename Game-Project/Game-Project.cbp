@@ -66,6 +66,8 @@
 		<Unit filename="SelectionMode.h" />
 		<Unit filename="Sprite.cpp" />
 		<Unit filename="Sprite.h" />
+		<Unit filename="Timer.cpp" />
+		<Unit filename="Timer.h" />
 		<Unit filename="logError.txt" />
 		<Unit filename="main.cpp" />
 		<Extensions>
