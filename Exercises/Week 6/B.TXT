@@ -1,0 +1,61 @@
+1. 
+
+bool majority(bool a, bool b, bool c) {
+    return a + b + c >= 2;
+}
+
+2.
+
+bool eq(const int arr1[], const int arr2[], int n) {
+    for (int i = 0; i < n; ++i) {
+        if (arr1[i] != arr2[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+3.
+
+for (int i = 0; i < 1000; i++) 
+    cube(i);
+
+
+4. 1717
+
+5. 
+
+int min(int a, int b, int c, int d) {
+    return min(min(a, b), min(c, d));
+}
+
+int main() {
+    std::cout << min(4, 3, 2, 1) << std::endl; // Output: 1
+    std::cout << min(1, 2, 3, 4) << std::endl; // Output: 1
+    std::cout << min(10, 20, 30, 5) << std::endl; // Output: 5
+    std::cout << min(7, 7, 7, 7) << std::endl; // Output: 7
+    return 0;
+}
+
+6. Lời gọi hàm f(1, 2) sẽ dẫn đến lỗi do không có hàm nào khớp hoàn toàn.
+
+7. D
+8. A
+9. D
+10. B
+11. C
+12. B
+13. D 
+14. D
+15. B
+16. D
+17. A 
+18. A 
+19. B 
+20. C 
+21. B 
+22. C 
+23. C 
+24. A 
+25. A 
+26. B 
