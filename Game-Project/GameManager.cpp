@@ -165,7 +165,7 @@ void GameManager::handleKeyboard()
             else if (mEvent.key.keysym.sym == SDLK_RETURN)
             {
                 Mix_HaltMusic();
-                newGame = new PlayField(BeatmapList[bmIndex], diffIndex);
+                newGame = new PlayField(BeatmapList[bmIndex], diffIndex, Auto);
                 delete newGame;
                 newGame = nullptr;
                 mQuit = false;
@@ -245,6 +245,11 @@ void GameManager::handleKeyboard()
                 Mix_HaltMusic();
             }
 
+            if (TYPE == "selection-mods-over")
+            {
+                Auto = (Auto + 1) % 2;
+            }
+
             char num = TYPE.back();
             TYPE.pop_back();
 
@@ -257,7 +262,7 @@ void GameManager::handleKeyboard()
                 else
                 {
                     Mix_HaltMusic();
-                    newGame = new PlayField(BeatmapList[bmIndex], diffIndex);
+                    newGame = new PlayField(BeatmapList[bmIndex], diffIndex, Auto);
                     delete newGame;
                     newGame = nullptr;
                     mQuit = false;
@@ -290,6 +295,8 @@ void GameManager::SelectionMode()
         mainMenu->Update(bmIndex, diffIndex);
 
         mainMenu->Render();
+
+        if (Auto) mGraphics->DrawText(mGraphics->LoadText("Auto Enabled", 100), 400, 1800);
 
         Cursor::Instance()->Render();
 

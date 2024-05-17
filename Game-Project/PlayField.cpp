@@ -2,7 +2,7 @@
 
 Int64 mStartTime;
 
-PlayField::PlayField(const Beatmap& beatmap, int DiffIndex)
+PlayField::PlayField(const Beatmap& beatmap, int DiffIndex, bool AutoPlay)
 {
     mAssetMgr = AssetManager::Instance();
     mGraphics = Graphics::Instance();
@@ -13,6 +13,8 @@ PlayField::PlayField(const Beatmap& beatmap, int DiffIndex)
     mHPBar = new HPBar();
 
     Mix_AllocateChannels(100);
+
+    Auto = AutoPlay;
 
     LoadBeatmap(beatmap, DiffIndex);
 
@@ -36,22 +38,32 @@ PlayField::PlayField(const Beatmap& beatmap, int DiffIndex)
     FailMenu->AddButton(new Button("pause-retry", 1342, 968, 1145, 317, true, 2));
     FailMenu->AddButton(new Button("pause-back", 390, 1343, 3052, 556, true, 2));
 
-    // Score panel
-    ScorePanel = new Menu(beatmap.beatmapMetadata.BackgroundFile);
-    ScorePanel->AddButton(new Button("ranking-panel", 0, 291, 3840, 3863, false));
-    ScorePanel->AddButton(new Button("menu-back", 0, 1896, 596, 264, true, HOVER_TYPE_GLOW));
-
-
     taikoslider.texture = mAssetMgr->GetTexture("Res\\taiko-Slider@2x.png");
 
     auto SavePoint = Waiting;
-    while (Open() == true)
+
+    if (AutoPlay == true) OpenAutoPlay();
+    else
     {
-        Waiting = SavePoint;
-        OnScreen.clear();
+        while (Open() == true)
+        {
+            Waiting = SavePoint;
+            OnScreen.clear();
+        }
     }
 
-    if (!failed) OpenMenu(ScorePanel);
+    if (!failed)
+    {
+        Mix_HaltMusic();
+        ScoreBoard = new RankingPanel(mScore, SavePoint.size());
+        ScoreBoard->SetInfo(
+            beatmap.beatmapMetadata.Artist,
+            beatmap.beatmapMetadata.Title,
+            beatmap.beatmapDifficulty[DiffIndex].difficultName
+        );
+
+        ScoreBoard->Open();
+    }
 }
 
 void PlayField::LoadBeatmap(const Beatmap& beatmap, int DiffIndex)
@@ -139,7 +151,8 @@ void PlayField::PlayButton(Int64 Time, int Type)
 
     Time = Time - OnScreen.front().GetTime();
     int Score = mScore->AddScore(Time, Type, OnScreen.front(), false);
-    SDL_FRect dst = {440, 606, 476, 476};
+    SDL_FRect dst = {475, 606, 520, 520};
+
     switch (Score)
     {
         case GREAT:
@@ -188,23 +201,26 @@ void PlayField::Render()
         circle.Render();
     }
 
-    if (!OnScreen.empty() && OnScreen.front().Disabled())
+    if (!Auto)
     {
-        if (!OnScreen.front().GetClicked())
+        if (!OnScreen.empty() && OnScreen.front().Disabled())
         {
-            SDL_FRect dst = {440, 606, 476, 476};
-            mGraphics->DrawTexture(mAssetMgr->GetTexture("Res/taiko-hit0@2x.png"), &dst, NULL);
-            CurrentHP -= DrainRate;
-            mScore->SetMiss();
+            if (!OnScreen.front().GetClicked())
+            {
+                SDL_FRect dst = {440, 606, 476, 476};
+                mGraphics->DrawTexture(mAssetMgr->GetTexture("Res/taiko-hit0@2x.png"), &dst, NULL);
+                CurrentHP -= DrainRate;
+                mScore->SetMiss();
+            }
+        }
+
+        while (!OnScreen.empty() && OnScreen.front().Disabled())
+        {
+            OnScreen.pop_front();
         }
     }
 
-    while (!OnScreen.empty() && OnScreen.front().Disabled())
-    {
-        OnScreen.pop_front();
-    }
-
-    if (Waiting.empty()) Playing = false;
+    if (Waiting.empty() && OnScreen.empty()) Playing = false;
 }
 
 bool PlayField::Open()
@@ -212,7 +228,6 @@ bool PlayField::Open()
     CurrentHP = MAX_HP;
 
     Playing = true;
-
 
     Int64 frameStart;
     int Offset = Waiting.top().GetAppearTime();
@@ -314,22 +329,22 @@ bool PlayField::Open()
             Mix_ResumeMusic();
         }
 
-        if (CurrentHP <= 0)
-        {
-            Mix_HaltMusic();
-            int CHOICE = OpenMenu(FailMenu);
-            switch (CHOICE)
-            {
-                case RETRY:
-                    RetryOffset = mTimer->Now() - frameStart;
-                    return true;
-                    break;
+        // if (CurrentHP <= 0)
+        // {
+        //     Mix_HaltMusic();
+        //     int CHOICE = OpenMenu(FailMenu);
+        //     switch (CHOICE)
+        //     {
+        //         case RETRY:
+        //             RetryOffset = mTimer->Now() - frameStart;
+        //             return true;
+        //             break;
 
-                case BACK:
-                    failed = true;
-                    return false;
-            }
-        }
+        //         case BACK:
+        //             failed = true;
+        //             return false;
+        //     }
+        // }
 
         mScore->Render();
 
@@ -339,6 +354,91 @@ bool PlayField::Open()
     }
 
     return false;
+}
+
+void PlayField::OpenAutoPlay()
+{
+    CurrentHP = MAX_HP;
+
+    Playing = true;
+
+    failed = false;
+
+    Int64 frameStart;
+    int Offset = Waiting.top().GetAppearTime();
+    Int64 previousTime = mTimer->Now();
+    mStartTime = previousTime;
+
+    if (Offset < 0) mStartTime -= Offset;
+    Offset = 0;
+
+    int deltaTime = 0;
+
+    mScore->Reset();
+
+    while (Playing)
+    {
+        frameStart = mTimer->Now();
+
+        deltaTime = frameStart - previousTime;
+
+        if (!Waiting.empty())
+        {
+            if (frameStart - mStartTime >= Waiting.top().GetAppearTime())
+            {
+                OnScreen.push_back(Waiting.top());
+                Waiting.pop();
+            }
+        }
+        previousTime = frameStart;
+
+
+        Update(deltaTime);
+
+        if (frameStart - mStartTime >= 0)
+        {
+            if (Mix_PlayingMusic() != 1)
+            {
+                mAudioMgr->PlayMusic(audioFile);
+            }
+        }
+
+        mGraphics->ClearBackbuffer();
+
+        Render();
+
+        if (!OnScreen.empty())
+        {
+            int Time = mTimer->Now() - mStartTime;
+            if (Time >= OnScreen.front().GetTime())
+            {
+                if (OnScreen.front().GetType() == KATS)
+                {
+                    Kats(true, OnScreen.front().GetTime());
+                }
+                if (OnScreen.front().GetType() == DONS)
+                {
+                    Dons(true, OnScreen.front().GetTime());
+                }
+                OnScreen.pop_front();
+            }
+        }
+
+        while (SDL_PollEvent(&mEvent)) {}
+
+        if (mInputMgr->KeyPressed(SDL_SCANCODE_ESCAPE))
+        {
+            Mix_PauseMusic();
+            failed = true;
+            return;
+        }
+
+        mScore->Render();
+
+        mGraphics->Render();
+
+        mInputMgr->Update();
+    }
 }
 
 int PlayField::OpenMenu(Menu* menu)

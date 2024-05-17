@@ -10,6 +10,7 @@
 #include "InputManager.h"
 #include "ScoreSystem.h"
 #include "Timer.h"
+#include "RankingPanel.h"
 
 #include <deque>
 #include <queue>
@@ -79,15 +80,15 @@ private:
 
     std::deque<HitCircle> OnScreen;
 
-    Menu* PauseMenu,* FailMenu,* ScorePanel;
+    Menu* PauseMenu,* FailMenu;
+
+    RankingPanel* ScoreBoard = nullptr;
 
     SDL_Event mEvent;
 
     bool LastMenuOpened = false;
 
     std::string audioFile;
-
-    std::vector<HitObject> mHitObjects;
 
     AssetManager* mAssetMgr;
     Graphics* mGraphics;
@@ -103,13 +104,17 @@ private:
 
     bool Playing = false, failed = false;
 
+    bool Auto = false;
+
     ScrollingBackground taikoslider;
 
 public:
 
-    PlayField(const Beatmap& beatmap, int DiffIndex);
+    PlayField(const Beatmap& beatmap, int DiffIndex, bool AutoPlay = false);
 
     bool Open();
+
+    void OpenAutoPlay();
 
     void LoadBeatmap(const Beatmap& beatmap, int DiffIndex);
 

@@ -37,6 +37,8 @@ SelectionMode::SelectionMode()
 
     sections.push_back(new Button("selection-random-over", 1106, 1939, 259, 221, true, HOVER_TYPE_GLOW));
 
+    sections.push_back(new Button("selection-mods-over", 888, 1939, 221, 221, true, HOVER_TYPE_GLOW));
+
     sections.push_back(new Button("menu-back", 0, 1896, 596, 264, true, HOVER_TYPE_GLOW));
 
     menuButtonBackground = mAssetMgr->GetTexture("Res\\menu-button-background@2x.png");

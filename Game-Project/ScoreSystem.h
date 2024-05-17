@@ -56,6 +56,7 @@ public:
     int GetGreat() const { return Great; }
     int GetOk() const { return Ok; }
     int GetMiss() const { return Miss; }
+    double GetAccuracy() const { return Accuracy; }
 
     int AddScore(double Time, int ClickType, HitCircle &hitCircle, bool KiaiTime = false);
 

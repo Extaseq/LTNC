@@ -45,6 +45,7 @@ bool InputManager::KeyReleased(SDL_Scancode scanCode)
     return (mPrevKeyboardtates[scanCode] && !mKeyboardStates[scanCode]);
 }
 
+
 void InputManager::Update()
 {
     memcpy(mPrevKeyboardtates, mKeyboardStates, mKeyLength);

@@ -14,6 +14,9 @@ private:
     const Uint8* mKeyboardStates;
     int mKeyLength;
 
+    Uint32 mPrevMouseState;
+    Uint32 mMouseState;
+
 public:
 
     static InputManager* Instance();

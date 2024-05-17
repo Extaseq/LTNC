@@ -5,6 +5,7 @@
 #include "ScoreSystem.h"
 #include "Graphics.h"
 #include "AssetManager.h"
+#include "Cursor.h"
 
 #define SS_GREAT_PERCENT
 
@@ -21,11 +22,20 @@ private:
 
     int TotalObject = 0;
 
+    double Accuracy = 100.0;
+
+    std::string Rank = "Res/ranking-";
+
     Button* back_button = nullptr;
 
     const std::string bg_file = "Res/ranking-panel@2x.png";
 
-    SDL_FRect dstRect = {0, 291, 3840, 3863};
+    SDL_FRect bgRect = {0, 290, 3840, 3863};
+    SDL_FRect rankRect = {71, -2400, 6468, 6566};
+
+    std::string Info = "";
+
+    std::vector<SDL_Texture*> BmInfo;
 
 public:
 
@@ -33,10 +43,11 @@ public:
 
     ~RankingPanel();
 
-    int GetRank()
-    {
+    void SetInfo(const std::string& Artist, const std::string& Title, const std::string& DiffName);
 
-    }
+    std::string GetRank();
+
+    void Open();
 
     void Update();
 

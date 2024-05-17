@@ -32,7 +32,7 @@ private:
     SelectionMode* mainMenu;
 
     int bmIndex = 0;
-    
+
     int diffIndex = 0;
 
     int BeatmapListSize;
@@ -64,6 +64,8 @@ public:
     bool wKeyDown = false;
 
     bool sKeyDown = false;
+
+    int Auto = 0;
 
 private:
 
