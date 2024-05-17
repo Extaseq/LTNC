@@ -116,6 +116,25 @@ std::string ScoreSystem::_to_string(double acc)
     return oss.str();
 }
 
+void ScoreSystem::UpdateOverallScore()
+{
+    std::ifstream FileIn("PlayerInfo.txt");
+
+    long long score;
+
+    FileIn >> score;
+
+    score += currentScore;
+
+    FileIn.close();
+
+    std::ofstream FileOut("PlayerInfo.txt");
+
+    FileOut << score;
+
+    FileOut.close();
+}
+
 void ScoreSystem::Render()
 {
     UpdateAccuracy();

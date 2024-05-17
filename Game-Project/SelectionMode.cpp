@@ -32,6 +32,8 @@ SelectionMode::SelectionMode()
 
     sections.push_back(new Button("songselect-bottom", 0, 1761, 3840, 399));
 
+    sections.push_back(new Button("Avatar", 1780, 1960, 200, 200));
+
     sections.push_back(new Button("selection-mode", 632.0, -1.0, 3208.0, 2161.0));
     sections.back()->setSrc(0, 68, 2284, 1542);
 
@@ -76,6 +78,15 @@ std::string SelectionMode::getButtonClicked()
     }
 
     return "NULL";
+}
+
+void SelectionMode::GetScore()
+{
+    std::ifstream file("PlayerInfo.txt");
+
+    file >> score;
+
+    file.close();
 }
 
 void SelectionMode::Update(int beatmapIndex, int diffIndex_)
@@ -144,6 +155,8 @@ void SelectionMode::Update(int beatmapIndex, int diffIndex_)
     }
     // To here
 
+    GetScore();
+
     prevIndex = beatmapIndex;
 }
 
@@ -165,7 +178,9 @@ void SelectionMode::Render()
         section->Draw();
     }
 
-    // sections.back()->Draw();
+    mGraphics->DrawNumber(std::to_string(score), 2240, 2005, 0.5);
+
+    sections.back()->Draw();
 
     mGraphics->DrawText(bmInfo[0], 200, 10);
     mGraphics->DrawText(bmInfo[1], 200, 80);

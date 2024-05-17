@@ -5,6 +5,8 @@
 
 #include <unordered_map>
 #include <SDL_mixer.h>
+#include <SDL_image.h>
+#include <SDL.h>
 
 class AssetManager
 {

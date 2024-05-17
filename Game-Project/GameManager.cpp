@@ -129,6 +129,7 @@ void GameManager::MainScreen()
             else if (mEvent.type == SDL_KEYDOWN || mEvent.type == SDL_MOUSEBUTTONDOWN)
             {
                 mQuit = false;
+                mAudioMgr->PlaySFX("Res/menu-freeplay-click.ogg");
                 SelectionMode();
                 FadeIn();
             }
@@ -164,6 +165,7 @@ void GameManager::handleKeyboard()
             }
             else if (mEvent.key.keysym.sym == SDLK_RETURN)
             {
+                mAudioMgr->PlaySFX("Res/menu-freeplay-click.ogg");
                 Mix_HaltMusic();
                 newGame = new PlayField(BeatmapList[bmIndex], diffIndex, Auto);
                 delete newGame;
@@ -172,7 +174,7 @@ void GameManager::handleKeyboard()
             }
             else if (mEvent.key.keysym.sym == SDLK_LEFT && !aKeyDown)
             {
-                mAudioMgr->PlaySFX("Res\\menu-play-click.ogg", -1);
+                mAudioMgr->PlaySFX("Res/select-expand.ogg");
                 --bmIndex;
                 diffIndex = 0;
                 aKeyDown = true;
@@ -180,7 +182,7 @@ void GameManager::handleKeyboard()
             }
             else if (mEvent.key.keysym.sym == SDLK_RIGHT && !dKeyDown)
             {
-                mAudioMgr->PlaySFX("Res\\menu-play-click.ogg", -1);
+                mAudioMgr->PlaySFX("Res/select-expand.ogg");
                 ++bmIndex;
                 diffIndex = 0;
                 dKeyDown = true;
@@ -188,7 +190,7 @@ void GameManager::handleKeyboard()
             }
             else if (mEvent.key.keysym.sym == SDLK_UP && !wKeyDown)
             {
-                mAudioMgr->PlaySFX("Res\\menu-play-click.ogg", -1);
+                mAudioMgr->PlaySFX("Res/select-difficulty.ogg");
                 wKeyDown = true;
 
                 if (diffIndex == 0) return;
@@ -197,7 +199,7 @@ void GameManager::handleKeyboard()
             }
             else if (mEvent.key.keysym.sym == SDLK_DOWN && !sKeyDown)
             {
-                mAudioMgr->PlaySFX("Res\\menu-play-click.ogg", -1);
+                mAudioMgr->PlaySFX("Res/select-difficulty.ogg");
                 sKeyDown = true;
 
                 if (diffIndex == (int)BeatmapList[bmIndex].beatmapDifficulty.size() - 1) return;
@@ -232,14 +234,14 @@ void GameManager::handleKeyboard()
 
             if (TYPE == "menu-back")
             {
-                mAudioMgr->PlaySFX("Res\\menu-back-click.ogg", -1);
+                mAudioMgr->PlaySFX("Res\\back-button-click.ogg");
 
                 SDL_Delay(100);
                 mQuit = true;
             }
             if (TYPE == "selection-random-over")
             {
-                mAudioMgr->PlaySFX("Res\\menuHit.ogg", -1);
+                mAudioMgr->PlaySFX("Res\\menuHit.ogg");
                 bmIndex = std::rand() % BeatmapListSize;
                 diffIndex = 0;
                 Mix_HaltMusic();
@@ -247,6 +249,7 @@ void GameManager::handleKeyboard()
 
             if (TYPE == "selection-mods-over")
             {
+                mAudioMgr->PlaySFX("Res\\menuHit.ogg", -1);
                 Auto = (Auto + 1) % 2;
             }
 
@@ -261,6 +264,7 @@ void GameManager::handleKeyboard()
                 }
                 else
                 {
+                    mAudioMgr->PlaySFX("Res/menu-freeplay-click.ogg");
                     Mix_HaltMusic();
                     newGame = new PlayField(BeatmapList[bmIndex], diffIndex, Auto);
                     delete newGame;

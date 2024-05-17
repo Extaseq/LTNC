@@ -6,6 +6,7 @@
 #include "Graphics.h"
 #include "AssetManager.h"
 #include "Cursor.h"
+#include "Timer.h"
 
 #define SS_GREAT_PERCENT
 
@@ -37,7 +38,7 @@ private:
     SDL_FRect bgRect = {0, 290, 3840, 3863};
     SDL_FRect rankRect = {71, -2400, 6468, 6566};
 
-    std::string Info = "";
+    std::string Info = "", PlayTime = "";
 
     std::vector<SDL_Texture*> BmInfo;
 
@@ -54,8 +55,6 @@ public:
     std::string _to_string(int score);
 
     std::string _to_string(double acc);
-
-    void DrawNumber(const std::string& num, int x, int y, double scale = 1.0);
 
     void Open();
 

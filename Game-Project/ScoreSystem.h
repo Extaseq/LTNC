@@ -6,6 +6,7 @@
 #include <string>
 #include <iomanip>
 #include <sstream>
+#include <fstream>
 
 #include "HitCircle.h"
 #include "AssetManager.h"
@@ -64,6 +65,8 @@ public:
     int AddScore(double Time, int ClickType, HitCircle &hitCircle, bool KiaiTime = false);
 
     std::string _to_string(double acc);
+
+    void UpdateOverallScore();
 
     void Render();
 

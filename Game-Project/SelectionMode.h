@@ -171,6 +171,8 @@ private:
 
     Beatmap currentBeatmap;
 
+    long long score;
+
 public:
 
     static SelectionMode* Instance();
@@ -178,6 +180,8 @@ public:
     static void Release();
 
     void Update(int index, int diffIndex);
+
+    void GetScore();
 
     std::string getButtonClicked();
 

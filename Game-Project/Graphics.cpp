@@ -165,6 +165,34 @@ void Graphics::DrawText(SDL_Texture* text, int x, int y)
     SDL_RenderCopy(mRenderer, text, NULL, &dest);
 }
 
+void Graphics::DrawNumber(const std::string& num, int x, int y, double scale)
+{
+    SDL_FRect dst = {x, y, 74.7 * scale, 90 * scale};
+
+    for (size_t i = 0; i < num.size(); ++i)
+    {
+        if (num[i] == '.')
+        {
+            dst.x -= (10 * scale);
+            Graphics::Instance()->DrawTexture(
+                AssetManager::Instance()->GetTexture(
+                    "Res/Assets/score/score-dot@2x.png"
+                ), &dst, NULL
+            );
+            dst.x += (20 * scale);
+        }
+        else
+        {
+            Graphics::Instance()->DrawTexture(
+                AssetManager::Instance()->GetTexture(
+                    "Res/Assets/score/score-" + std::to_string(num[i] - '0') + "@2x.png"
+                ), &dst, NULL
+            );
+            dst.x += (55 * scale);
+        }
+    }
+}
+
 void Graphics::Render()
 {
     SDL_RenderPresent(mRenderer);

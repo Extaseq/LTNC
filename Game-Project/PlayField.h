@@ -123,6 +123,8 @@ public:
 
     void PlayButton(Int64 Time, int Type);
 
+    int GetButtonOpening(const std::string& button_name);
+
     int OpenMenu(Menu* menu);
 
     void Update(int deltaTime);

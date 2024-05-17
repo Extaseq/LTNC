@@ -1,6 +1,8 @@
 #ifndef _GRAPHICS_H
 #define _GRAPHICS_H
 
+#include "AssetManager.h"
+
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
@@ -13,7 +15,7 @@ class Graphics {
 public:
 
     static const int SCREEN_WIDTH = 1920;
-    
+
     static const int SCREEN_HEIGHT = 1080;
 
 private:
@@ -47,6 +49,8 @@ public:
     void DrawTexture(SDL_Texture* tex, const SDL_FRect *dstRec, SDL_Rect *srcRect = NULL, double angle = 0);
 
     void DrawText(SDL_Texture* text, int x, int y);
+
+    void DrawNumber(const std::string& num, int x, int y, double scale = 1.0);
 
     void Render();
 

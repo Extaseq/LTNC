@@ -55,6 +55,7 @@ PlayField::PlayField(const Beatmap& beatmap, int DiffIndex, bool AutoPlay)
     if (!failed)
     {
         Mix_HaltMusic();
+        mAudioMgr->PlayMusic("Res/applause.ogg");
         ScoreBoard = new RankingPanel(mScore, SavePoint.size());
         ScoreBoard->SetInfo(
             beatmap.beatmapMetadata.Artist,
@@ -63,6 +64,8 @@ PlayField::PlayField(const Beatmap& beatmap, int DiffIndex, bool AutoPlay)
         );
 
         ScoreBoard->Open();
+
+        if (!AutoPlay) mScore->UpdateOverallScore();
     }
 }
 
@@ -104,13 +107,25 @@ void PlayField::LoadBeatmap(const Beatmap& beatmap, int DiffIndex)
     }
 }
 
-int GetButtonOpening(const std::string& button_name)
+int PlayField::GetButtonOpening(const std::string& button_name)
 {
-    if (button_name == "pause-continue") return CONTINUE;
+    if (button_name == "pause-continue")
+    {
+        mAudioMgr->PlaySFX("Res/pause-continue-click.ogg");
+        return CONTINUE;
+    }
 
-    if (button_name == "pause-retry") return RETRY;
+    if (button_name == "pause-retry")
+    {
+        mAudioMgr->PlaySFX("Res/pause-retry-click.ogg");
+        return RETRY;
+    }
 
-    if (button_name == "pause-back") return BACK;
+    if (button_name == "pause-back")
+    {
+        mAudioMgr->PlaySFX("Res/pause-back-click.ogg");
+        return BACK;
+    }
 
     return -1;
 }
@@ -304,6 +319,7 @@ bool PlayField::Open()
         if (mInputMgr->KeyPressed(SDL_SCANCODE_ESCAPE))
         {
             Mix_PauseMusic();
+            mAudioMgr->PlayMusic("Res/applause.ogg");
             int CHOICE = OpenMenu(PauseMenu);
             switch (CHOICE)
             {
@@ -329,22 +345,23 @@ bool PlayField::Open()
             Mix_ResumeMusic();
         }
 
-        // if (CurrentHP <= 0)
-        // {
-        //     Mix_HaltMusic();
-        //     int CHOICE = OpenMenu(FailMenu);
-        //     switch (CHOICE)
-        //     {
-        //         case RETRY:
-        //             RetryOffset = mTimer->Now() - frameStart;
-        //             return true;
-        //             break;
+        if (CurrentHP <= 0)
+        {
+            Mix_HaltMusic();
+            mAudioMgr->PlayMusic("Res/failsound.ogg");
+            int CHOICE = OpenMenu(FailMenu);
+            switch (CHOICE)
+            {
+                case RETRY:
+                    RetryOffset = mTimer->Now() - frameStart;
+                    return true;
+                    break;
 
-        //         case BACK:
-        //             failed = true;
-        //             return false;
-        //     }
-        // }
+                case BACK:
+                    failed = true;
+                    return false;
+            }
+        }
 
         mScore->Render();
 

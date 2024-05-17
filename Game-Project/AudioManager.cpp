@@ -25,6 +25,8 @@ AudioManager::AudioManager()
     {
         printf("Mixer Initialization Error: %s\n", Mix_GetError());
     }
+
+    Mix_VolumeMusic(MIX_MAX_VOLUME / 2);
 }
 
 AudioManager::~AudioManager()

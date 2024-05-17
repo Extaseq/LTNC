@@ -20,6 +20,8 @@ RankingPanel::~RankingPanel() {}
 void RankingPanel::SetInfo(const std::string& Artist, const std::string& Title, const std::string& DiffName)
 {
     Info = Artist + " - " + Title + " [" + DiffName + "]";
+
+    PlayTime = "Played by Player in: " + Timer::Instance()->GetDate();
 }
 
 std::string RankingPanel::GetRank()
@@ -57,34 +59,6 @@ std::string RankingPanel::_to_string(double acc)
     std::ostringstream oss;
     oss << std::fixed << std::setprecision(2) << acc;
     return oss.str();
-}
-
-void RankingPanel::DrawNumber(const std::string& num, int x, int y, double scale)
-{
-    SDL_FRect dst = {x, y, 74.7 * scale, 90 * scale};
-
-    for (size_t i = 0; i < num.size(); ++i)
-    {
-        if (num[i] == '.')
-        {
-            dst.x -= (10 * scale);
-            Graphics::Instance()->DrawTexture(
-                AssetManager::Instance()->GetTexture(
-                    "Res/Assets/score/score-dot@2x.png"
-                ), &dst, NULL
-            );
-            dst.x += (20 * scale);
-        }
-        else
-        {
-            Graphics::Instance()->DrawTexture(
-                AssetManager::Instance()->GetTexture(
-                    "Res/Assets/score/score-" + std::to_string(num[i] - '0') + "@2x.png"
-                ), &dst, NULL
-            );
-            dst.x += (55 * scale);
-        }
-    }
 }
 
 void RankingPanel::Open()
@@ -129,19 +103,20 @@ void RankingPanel::Render()
         AssetManager::Instance()->GetTexture(Rank), &rankRect, NULL
     );
 
-    DrawNumber(score, 500, 365, 2);
+    Graphics::Instance()->DrawNumber(score, 500, 365, 2);
 
-    DrawNumber(std::to_string(GreatCount), 400, 650, 1.5);
+    Graphics::Instance()->DrawNumber(std::to_string(GreatCount), 400, 650, 1.5);
 
-    DrawNumber(std::to_string(OkCount), 400, 900, 1.5);
+    Graphics::Instance()->DrawNumber(std::to_string(OkCount), 400, 900, 1.5);
 
-    DrawNumber(std::to_string(MissCount), 1250, 1180, 1.5);
+    Graphics::Instance()->DrawNumber(std::to_string(MissCount), 1250, 1180, 1.5);
 
-    DrawNumber(std::to_string(maxCombo), 100, 1480, 1.4);
+    Graphics::Instance()->DrawNumber(std::to_string(maxCombo), 100, 1480, 1.4);
 
-    DrawNumber(_to_string(Accuracy), 980, 1480, 1.4);
+    Graphics::Instance()->DrawNumber(_to_string(Accuracy), 980, 1480, 1.4);
 
     Cursor::Instance()->Render();
 
     Graphics::Instance()->DrawText(Graphics::Instance()->LoadText(Info, 80), 30, 30);
+    Graphics::Instance()->DrawText(Graphics::Instance()->LoadText(PlayTime, 60), 30, 120);
 }
