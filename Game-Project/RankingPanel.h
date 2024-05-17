@@ -24,6 +24,10 @@ private:
 
     double Accuracy = 100.0;
 
+    int maxCombo = 0;
+
+    std::string score;
+
     std::string Rank = "Res/ranking-";
 
     Button* back_button = nullptr;
@@ -46,6 +50,12 @@ public:
     void SetInfo(const std::string& Artist, const std::string& Title, const std::string& DiffName);
 
     std::string GetRank();
+
+    std::string _to_string(int score);
+
+    std::string _to_string(double acc);
+
+    void DrawNumber(const std::string& num, int x, int y, double scale = 1.0);
 
     void Open();
 

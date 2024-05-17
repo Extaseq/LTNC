@@ -98,6 +98,7 @@ int ScoreSystem::AddScore(double Time, int ClickType, HitCircle &hitCircle, bool
     }
 
     currentCombo++;
+    maxCombo = maxCombo < currentCombo ? currentCombo : maxCombo;
 
     currentScore += (
         (Score + std::min(currentCombo / 10, 10) * SCORE_MULTIPLIER) * (KiaiTime ? 1.2 : 1.0)

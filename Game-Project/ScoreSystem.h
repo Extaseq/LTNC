@@ -26,6 +26,7 @@ private:
     long int currentScore = 0;
 
     int currentCombo = 0;
+    int maxCombo = 0;
 
     double GreatTime = 0;
 
@@ -57,6 +58,8 @@ public:
     int GetOk() const { return Ok; }
     int GetMiss() const { return Miss; }
     double GetAccuracy() const { return Accuracy; }
+    int GetScore() const { return currentScore; }
+    int GetMaxCombo() const { return maxCombo; }
 
     int AddScore(double Time, int ClickType, HitCircle &hitCircle, bool KiaiTime = false);
 
